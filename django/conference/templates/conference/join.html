@@ -1,0 +1,107 @@
+{% extends "conference/layout.html" %}
+
+{% block body %}
+<div class="modal_block_container">
+    <button hidden type="button" class="btn btn-primary" id="modal_btn_first" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        Добавить меня как соавтора к уже существующей статье
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Произошла ошибка</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="error red join_error" id="join_error"></div>
+                    <div class="modal_body_title" id="modal_body_title">Тема:</div>
+                    <div class="modal_body_authors" id="modal_body_authors">
+
+                    </div>
+                    <div class="modal_body_section" id="modal_body_section">Секция:</div>
+                    <div class="modal_body_keywords" id="modal_body_keywords">Ключевые слова:</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Изменить данные</button>
+                        <button type="button" class="btn btn-primary" id="join_article_btn">Добавить меня как соавтора</button>
+                        <div class="spinner-border m-3" role="status" id="loading_modal" hidden>
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <button hidden class="btn btn-primary" id="modal_btn_second" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">Open second modal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalToggleLabel2">Запрос отправлен</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    На электронную почту автора данного доклада отправлено письмо с инструкцией по добавлению вас как соавтора.
+                </div>
+                <div class="modal-footer">
+                    <a href="{%url 'profile' %}"  class="btn btn-primary">Перейти в личный кабинет</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Registration Article form -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="wrapper form_wrapper">
+
+            <h3>Присоединение к команде</h3>
+            <h4 class="margin_bottom">Укажите тему доклада и секцию, в которой он зарегистрирован. Затем нажните «поиск».</h4>
+
+            {% if message %}
+            <div class="red">{{ message }}</div>
+            {% endif %}
+
+            <form action="" method="post" onsubmit="return false;">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="section" class="form-label">Секция:</label>
+                    <select autofocus class="form-control" required name="section" id="section">
+                        <option selected disabled value="None">Выберете секцию</option>
+                        {% for item in sections %}
+                        <option value="{{ item.id }}">{{ item.content }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="title" class="form-label margin_top">Тема доклада:</label>
+                    <input class="form-control" required type="text" name="title" id="title" placeholder="Тема доклада">
+                </div>
+
+                <div class="error_field red" id="submit_error">
+
+                </div>
+
+                <div class="form-buttons margin_top">
+                    <input type="button" value="Поиск" class="btn btn-primary" id="submit_btn">
+                    <div class="spinner-border m-3" role="status" id="loading" hidden>
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <a href="{%url 'profile' %}"  class="btn btn-outline">Вернуться в личный кабинет</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    var CSRFTOKEN = '{{ csrf_token }}';
+</script>
+<script src="../../static/conference/js/register.js"></script>
+<script src="../../static/conference/js/join.js"></script>
+{% endblock %}

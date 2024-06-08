@@ -1,0 +1,20 @@
+{% load wagtailcore_tags %}
+
+
+
+{% if self.program %}
+<br>
+<div class="row justify-content-center text-center">
+    <a href="{{ self.program.url }}" download="{{ self.program.title }}" target="_blank"><div class="btn btn-primary fit_content">Скачать программу конференции</div></a>
+</div>
+<br>
+{% endif %}
+
+<div class="row justify-content-center text-center mt-2">
+    <a href="
+    {% if self.instruction_url %}
+        {{ self.instruction_url }}
+    {% else %}
+        {% url 'thesis_instruction' %}
+    {% endif %}" class="btn btn-primary fit_content">Требования к докладам <i class="fa-solid fa-location-arrow"></i></a>
+</div>

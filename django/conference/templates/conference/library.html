@@ -1,0 +1,183 @@
+{% extends "conference/layout.html" %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block links %}
+<link rel="stylesheet" href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css"/> <!-- Autocomplete -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> <!-- Select2 -->
+{% endblock %}
+
+{% block body %}
+<div class="container-xxl no_paddings">
+    <h2 id="header">Поиск материалов конференции</h2>
+    {% if message %}
+    <div class="red">{{ message }}</div>
+    {% endif %}
+    <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+            <div id="collapseOne" class="accordion-collapse collapse {% if expand_form %}show{% endif %}" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <form action="{% url 'library' %}" method="post">
+                        <div class="error_field red" id="submit_error"></div>
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <div id="autocomplete_title" class="autocomplete">
+                                        {{ form.title|add_label_class:"input_label" }}
+                                        {% render_field form.title class="form-control" %}
+                                        <ul class="autocomplete-result-list"></ul>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    {{ form.keywords__icontains|add_label_class:"input_label" }}
+                                    {% render_field form.keywords__icontains class="form-control" %}
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    {{ form.authors__in|add_label_class:"input_label" }}
+                                    {% render_field form.authors__in class="form-control" %}
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    {{ form.city__icontains|add_label_class:"input_label" }}
+                                    {% render_field form.city__icontains class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.institution__icontains|add_label_class:"input_label" }}
+                                    {% render_field form.institution__icontains class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.department__icontains|add_label_class:"input_label" }}
+                                    {% render_field form.department__icontains class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.major__icontains|add_label_class:"input_label" }}
+                                    {% render_field form.major__icontains class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.level__icontains|add_label_class:"input_label" }}
+                                    {% render_field form.level__icontains class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.course|add_label_class:"input_label" }}
+                                    {% render_field form.course class="form-control" %}
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    {{ form.is_winner|add_label_class:"input_label" }}
+                                    {% render_field form.is_winner class="form-control" %}
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <div id="autocomplete_title_translation" class="autocomplete">
+                                        {{ form.title_translation|add_label_class:"input_label" }}
+                                        {% render_field form.title_translation class="form-control" %}
+                                        <ul class="autocomplete-result-list"></ul>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    {{ form.keywords_translation__icontains|add_label_class:"input_label" }}
+                                    {% render_field form.keywords_translation__icontains class="form-control" %}
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    {{ form.section__in|add_label_class:"input_label" }}
+                                    {% render_field form.section__in class="form-control" %}
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    {{ form.adviser_last_name|add_label_class:"input_label" }}
+                                    {% render_field form.adviser_last_name class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.adviser_first_name|add_label_class:"input_label" }}
+                                    {% render_field form.adviser_first_name class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.adviser_middle_name|add_label_class:"input_label" }}
+                                    {% render_field form.adviser_middle_name class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.adviser_last_name_translation|add_label_class:"input_label" }}
+                                    {% render_field form.adviser_last_name_translation class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.adviser_first_name_translation|add_label_class:"input_label" }}
+                                    {% render_field form.adviser_first_name_translation class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.adviser_degree__icontains|add_label_class:"input_label" }}
+                                    {% render_field form.adviser_degree__icontains class="form-control" %}
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    {{ form.is_complete|add_label_class:"input_label" }}
+                                    {% render_field form.is_complete class="form-control" %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.is_participation_confirmed|add_label_class:"input_label" }}
+                                    {% render_field form.is_participation_confirmed class="form-control" %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-buttons margin_top">
+                            <input type="submit" value="Поиск" class="btn btn-primary margin_right" id="search_btn">
+                            <div class="spinner-border m-3" role="status" id="loading" hidden>
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <a href="{%url 'library' %}"  class="btn btn-secondary">Очистить</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Фильтры
+                </button>
+            </h2>
+        </div>
+    </div>
+
+    <hr>
+
+
+    <div class="row">
+        <div class="container" id="articles_container">
+            {% if articles %}
+            <div class="note_container"><span class="note">*показываются первые {{ MAX_SEARCH_RESULTS }} совпадений.</span></div>
+            {% for article in articles %}
+            <div class="wrapper article_wrapper">
+                <div class="article_title">Тема: <a href="{% url 'article' article_id=article.id %}">{{ article.title }}</a></div>
+                <div class="article_section">Секция: {{ article.section }}</div>
+                <div class="article_keywords">Ключевые слова: {{ article.keywords }}</div>
+<!--                <div class="article_deadline">Изменить данные можно до {{ article.deadline }}</div>-->
+            </div>
+            {% endfor articles|length > 0 %}
+            {% elif not_found %}
+            <h3>Ничего не найдено</h3>
+            {% endif %}
+        </div> <!-- Articles container -->
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<!--<script defer src="../../static/conference/jQuery.js"></script>-->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script defer src="https://unpkg.com/@trevoreyre/autocomplete-js"></script> <!-- autocomplete -->
+
+<script defer src="../../static/conference/js/library.js"></script>
+<script defer src="../../static/conference/js/library_autocomplete.js"></script>
+
+<script defer>
+    var CSRFTOKEN = '{{ csrf_token }}';
+    $('#id_section__in').select2({width: '100%', padding: '.375rem .75rem', border: 'var(--bs-border-width) solid var(--bs-border-color);'});
+    $('#id_authors__in').select2({width: '100%'});
+</script>
+
+{% endblock %}

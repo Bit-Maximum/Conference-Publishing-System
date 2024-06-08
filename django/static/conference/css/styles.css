@@ -1,0 +1,330 @@
+:root {
+    --index: calc(1vw + 1vh);
+}
+
+.fit_content {
+    max-width: fit-content;
+}
+
+.hidden {
+    display: none;
+}
+
+.elementor-icon {
+    display: inline-block;
+}
+
+.copyright {
+    color: #9A9C9F;
+}
+
+.copyright a {
+    color: #9A9C9F;
+}
+
+.small {
+    font-size: .875em;
+}
+
+.small p {
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+
+li p {
+    margin: 0;
+    display: inline;
+}
+
+.main {
+    padding: 0 20px;
+}
+
+footer {
+    padding: 0 20px 10px 20px;
+}
+
+footer hr {
+    margin-bottom: 0.6rem;
+}
+
+.wrapper {
+    border: 1px lightgray solid;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 15px 20px;
+}
+
+.flex {
+    display: flex !important;
+}
+
+.flex_soft {
+    display: flex;
+}
+
+.align-center {
+    align-items: center !important;
+}
+
+.display-block {
+    display: block; !important;
+}
+
+.inline {
+    display: inline;
+}
+
+.container_left {
+    margin-right: auto;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: #00cd00;
+}
+
+.data {
+    display: inline;
+    font-weight: normal;
+}
+
+.form_wrapper {
+    width: 100%;
+    margin: 50px 20px;
+    max-width: 700px;
+}
+
+.container_center {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    overflow: auto;
+}
+
+.label_secondary {
+    color: gray;
+}
+
+.img_subscription {
+    color: gray;
+    font-size: smaller;
+    font-style: italic;
+}
+
+.small {
+    font-size: smaller;
+}
+
+.error {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.action {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.adviser_wrapper {
+    padding-top: 10px;
+}
+
+.authorship_error {
+    margin-bottom: 10px;
+}
+
+.container_margins {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.margin_right {
+    margin-right: 10px;
+}
+
+.margin_left {
+    margin-left: 15px;
+}
+
+.margin_top {
+    margin-top: 10px;
+}
+
+.margin_bottom {
+    margin-bottom: 10px;
+}
+
+.to_left {
+    margin-left: auto;
+}
+
+/* Profile */
+.about_label {
+    margin-top: 5px;
+}
+
+.no_margins {
+    margin: 0;
+}
+
+.no_paddings {
+    padding: 0;
+}
+
+.padding_light {
+    padding: 5px;
+}
+
+/* Articles Items */
+.article_title {
+    font-size: larger;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.article_section, .email_info {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.article_keywords {
+    margin-bottom: 10px;
+}
+
+.article_deadline {
+    font-style: italic;
+}
+
+.error_field {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Modal */
+.modal_body_title {
+    font-size: larger;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.modal_body_authors_header {
+    font-weight: 700;
+}
+
+.modal_body_section {
+    margin-bottom: 5px;
+}
+
+.modal_body_keywords {
+    margin-bottom: 10px;
+}
+
+.title, .section, .source_header {
+    font-size: larger;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.abstract, .author, .adviser {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.keywords {
+    margin-bottom: 5px;
+}
+
+.download {
+    font-size: large;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.grant {
+    font-style: italic;
+    color: gray;
+}
+
+/* Library */
+.input_label {
+    display: block;
+    margin-top: 5px;
+}
+
+.note_container {
+    display: flex;
+    width: 100%;
+}
+.note {
+    font-style: italic;
+    color: gray;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.about_user {
+    font-size: large;
+    font-weight: 500;
+}
+
+/* Index Page */
+.text {
+    text-indent: 1.5em;
+    text-align: justify;
+}
+
+
+.large {
+    font-size: large;
+}
+
+.no_border {
+    border: none;
+}
+
+.mw-700 {
+    max-width: 700px;
+}
+
+.mh-160 {
+    max-height: 160px;
+}
+
+.mt-2r {
+    margin-top: 2rem!important;
+}
+
+th {
+    font-weight: 500;
+}
+
+.custom-popover {
+    --bs-popover-max-width: 200px;
+    --bs-popover-border-color: var(-bs-primary);
+    --bs-popover-header-bg: var(-bs-primary);
+    --bs-popover-header-color: var(--bs-white);
+    --bs-popover-body-padding-x: 1rem;
+    --bs-popover-body-padding-y: .5rem;
+}
+
+@media (max-width: 576px) {
+    .navbar_brand {
+        font-size: 17px;
+    }
+}

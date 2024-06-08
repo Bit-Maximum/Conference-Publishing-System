@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+
+  redis:
+    image: redis:7.0.11-alpine
+    ports:
+      - "6379:6379"
+
+  django:
+    container_name: django
+    build:
+      context: ./django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./django:/usr/src/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+  celery:
+    container_name: celery
+    build:
+      context: ./django
+    user: django-user
+    command: celery -A publisher worker -l INFO
+    volumes:
+      - ./django:/usr/src/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - django
+
+  celerybeat:
+    container_name: celerybeat
+    build:
+      context: ./django
+    user: django-user
+    command: celery -A publisher beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - ./django:/usr/src/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - django

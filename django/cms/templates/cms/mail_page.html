@@ -1,0 +1,24 @@
+{% extend "cms/base_mail_page.html" %}
+{% load static wagtailcore_tags %}
+{% wagtail_site as current_site %}
+
+{% if self.header %}
+{% block headings_block %}
+    {{ self.header }}
+{% endblock %}
+{% endif %}
+
+{% block content_block %}
+{% if self.content %}
+    {% include_block self.content %}
+{% else %}
+    {{ content }}
+{% endif %}
+{% endblock %}
+
+{% if self.footer %}
+{% block footer_block %}
+<br>
+<p>{{ self.footer }}</p>
+{% endblock %}
+{% endif %}

@@ -1,0 +1,109 @@
+{% extends "conference/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="wrapper">
+            <h4>Доклад: {{ article.title }}</h4>
+            {% if request.user.id in authors_ids %}
+            <div class="action flex">
+                <button type="button" class="btn btn-primary margin_right" id="add_author_btn">Добавить соавтора</button>
+                <a href="{%url 'article' article_id=article.id %}"  class="btn btn-secondary to_left">Вернуться</a>
+            </div>
+            <hr>
+
+            <div class="wrapper authorship_container" id="co_authorship_container" hidden>
+                <h5>Добавление соавтора</h5>
+                <h6>Чтобы добавить соавтора, он должен быть зарегистрирован на сайте конференции и должен подтвердить свою электронную почту. Зарегистрироваться можно <a href="{% url 'register' %}">на этой странице.</a></h6>
+                <div class="action" id="find_author_container" data-article_id="{{ article.id }}">
+                    <div class="error red" id="find_error"></div>
+                    <form onsubmit="return false;">
+                        <div class="form-group mb-3">
+                            <label for="email_author" class="form-label">e-mail соавтора:</label>
+                            <input class="form-control" type="email" name="email" disabled id="email_author" placeholder="e-mail">
+                        </div>
+                        <button type="button" class="btn btn-primary" id="add_co_author_btn">Поиск</button>
+                    </form>
+                </div>
+                <button hidden type="button" class="btn btn-secondary" id="modal_add_btn" data-bs-toggle="modal" data-bs-target="#add_author_modal">Добавить автора</button>
+                <div class="items_container" id="authorship_items"></div>
+            </div>
+
+            <!-- Modal Successful adding co-author -->
+            <div class="modal fade" id="add_author_modal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalToggleLabel2">Приглашение отправлено</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            На электронную почту указанного автора отправлено приглашение присоединиться к докладу в качестве соавтора.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary margin_right" id="refresh_page_btn">Указать ещё одного соавтора</button>
+                            <a href="{%url 'article' article_id=article.id %}"  class="btn btn-outline">Вернуться к докладу</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="authors_container" id="authors">
+                {% if authors %}
+                <h4 class="mb-3 mt-2">Зарегистрированные авторы доклада:</h4>
+                {% for user in authors %}
+                <div class="wrapper">
+                    <div class="form-group" hidden>
+                        <div class="about_label" id="author_{{ user.id }}"></div>
+                    </div>
+                    <div class="form-group mb-0 flex align-items-center">
+                        <div class="about_user data" id="full_name_{{ user.id }}">{{ user.last_name }} {{ user.first_name }} {{ user.middle_name }}</div>
+                        <button type="button" class="btn btn-secondary to_left" id="remove_author_{{ user.id }}" onclick="remove_author({{ user.id }})" data-bs-toggle="modal" data-bs-target="#delete_author_modal">Удалить</button>
+                    </div>
+
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+
+            <!-- Modal Delete Article Text -->
+            <div class="modal fade" id="delete_author_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Подтверждение действия</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="error red" id="deletion_error"></div>
+                            <div>Вы действительно хотите удалить <strong class="data" id="modal_full_name"></strong> из числа соавторов?</div>
+                            <div hidden id="delete_user_info" data-article_id="{{ article.id }}"></div>
+                            <br>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="confirm_delete_author_btn">Да, я хочу удалить этого соавтора</button>
+                                <div class="spinner-border m-3" role="status" id="loading_delete" hidden>
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="error red">У вас нет доступа для изменения авторов этого доклада.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    var CSRFTOKEN = '{{ csrf_token }}';
+</script>
+<script src="../../static/conference/js/edit_authorship.js"></script>
+{% endblock %}

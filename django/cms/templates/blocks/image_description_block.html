@@ -1,0 +1,8 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% image self height-650 as img %}
+
+<div class="image_wrapper mt-3 mb-2">
+    <img src="{{ img.url }}" class="img-fluid img-thumbnail" alt="{{  img.alt }}">
+    <div class="text-end img_subscription">{{ img.alt }}</div>
+</div>

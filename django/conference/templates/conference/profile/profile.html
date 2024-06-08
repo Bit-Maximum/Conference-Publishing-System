@@ -1,0 +1,118 @@
+{% extends "conference/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<div class="container-xxl no_paddings" id="about_container">
+    <h1 id="header">{% block header %}{% endblock %}</h1>
+    <div class="errors_container" id="edit_profile_error_container"></div>
+    <div class="row">
+        <div class="col-12 col-lg-6">
+            <div class="blank" id="general_info_container">
+                <div class="wrapper" id="edit_general_info_wrapper" hidden>
+                    <h4 class="margin_bottom">ФИО: режим редактирования</h4>
+                    <form id="edit_general_info_form" action="">
+                        <div class="form-group mb-3">
+                            <label for="edit_first_name" class="form-label">Имя:</label>
+                            <input class="form-control" disabled type="text" name="first_name" id="edit_first_name" placeholder="Имя">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="edit_last_name" class="form-label">Фамилия:</label>
+                            <input class="form-control" disabled type="text" name="last_name" id="edit_last_name" placeholder="Фамилия">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="edit_middle_name" class="form-label">Отчество:</label>
+                            <input class="form-control" disabled type="text" name="middle_name" id="edit_middle_name" placeholder="Отчество">
+                            <label for="middle_name" class="form-label">*если есть</label>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-primary margin_right" id="submit_general_info_btn">Сохранить</button>
+                            <button type="button" class="btn btn-secondary" id="cansel_general_info_btn">Отмена</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="wrapper" id="general_info">
+                    <h4>ФИО</h4>
+                    <div class="about_label">Имя: <div class="data" id="first_name">{{ user.first_name }}</div></div>
+                    <div class="about_label">Фамилия: <div class="data"  id="last_name">{{ user.last_name }}</div></div>
+                    <div class="about_label {% if user.middle_name == ''%} hidden {% endif %}">Отчество: <div class="data" id="middle_name">{{ user.middle_name }}</div></div>
+                    <button type="button" class="btn btn-primary margin_top" id="edit_general_info_btn">Изменить данные</button>
+                </div>
+                <div class="wrapper flex flex-wrap justify-content-between" id="email_info">
+                    <div class="about_label email_info">e-mail: <div class="data" id="email">{{ request.user.email }}</div></div>
+                    <a href="{%url 'email_change' %}"  class="btn btn-light align-bottom">Указать другой e-mail</a>
+                </div>
+            </div> <!-- General Info -->
+
+            {% block verify %}
+            {% endblock %}
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="blank" id="secondary_info_container">
+                <div class="wrapper">
+                {% block secondary_info %}
+                {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+</div>
+
+<div class="container-xxl no_paddings">
+    <div class="row margin_top">
+        {% block redirect_buttons %}
+        {% endblock %}
+    </div>
+</div>
+
+<div class="container-xxl no_paddings">
+    <div class="row margin_top">
+        <div class="col-12 {% if comments %}col-lg-6{% endif %}">
+            <div class="items_container">
+                <h4>{% block items_header %}{% endblock %}</h4>
+                {% block articles %}
+                {% endblock %}
+            </div> <!-- Articles container -->
+        </div>
+
+        <div class="col-12 {% if comments %}col-lg-6{% endif %}">
+            <div class="items_container" id="comments_container">
+                {% if comments %}
+                    {% block comments_header %}{% endblock %}
+                {% for item in comments %}
+                <div class="wrapper comment_wrapper">
+                    <div class="about_label">Доклад: <a href="{% url 'article' article_id=item.comment.article.id %}" class="data">{{ item.comment.article.title }}</a></div>
+                    <div class="about_label">Дата написания: <div class="data">{{ item.comment.creation_date }}</div></div>
+                    <hr>
+                    <div class="about_label"><div class="data">{{ item.comment.content }}</div></div>
+                    {% if item.attachments %}
+                    <hr>
+                    <div class="about_label mb-2">Приложения к комментарию:</div>
+                    <ol class="list-group list-group-numbered">
+                        {% for attachment in item.attachments %}
+                        <li class="list-group-item"><a href="{% url 'download_attachment' attachment_id=attachment.id %}">{{ attachment.filename }}</a></li>
+                        {% endfor %}
+                    </ol>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    var CSRFTOKEN = '{{ csrf_token }}';
+</script>
+
+<script src="{% static 'conference/js/profile.js' %}"></script>
+    {% block custom_script %}
+
+    {% endblock %}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% load wagtailcore_tags %}
+
+<div class="row justify-content-center">
+    <div class="wrapper form_wrapper mb-4 mt-2r">
+        <div class="form-group mb-3">
+            <strong class="about_label">Дата проведения: <span class="data">{{ self.date }}</span></strong>
+        </div>
+        <div class="form-group mb-3">
+            <strong class="about_label">Место проведения: <span class="data">{{ self.address }}</span></strong>
+        </div>
+        <div class="form-group mb-3">
+            <strong class="about_label">Рабочий язык: <span class="data">{{ self.language }}</span></strong>
+        </div>
+        <div class="form-group mb-3">
+            <strong class="about_label">Форма участия: <span class="data">{{ self.participation }}</span></strong>
+        </div>
+    </div>
+</div>

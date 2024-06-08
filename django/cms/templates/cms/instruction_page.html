@@ -1,0 +1,81 @@
+{% extends "conference/layout.html" %}
+{% load static wagtailcore_tags base_tags wagtailuserbar %}
+
+{% block title %}
+{% wagtail_site as current_site %}
+{% if current_site and current_site.site_name %}{{ current_site.site_name }}{% endif %}
+{% endblock %}
+
+
+{% block body %}
+
+{% wagtailuserbar %}
+
+<div class="container-xxl">
+    <div class="row justify-content-center">
+
+        <div class="row justify-content-center text-center mt-3">
+            <h4>{{ page.title }}</h4>
+        </div>
+
+        {% if page.subtitle %}
+        <div class="row justify-content-center text-center mt-3">
+            <div class="mw-700">
+                <p class="large">{{ page.subtitle }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row justify-content-center text-center mt-3">
+            <div class="dropdown">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Навигация по странице
+                </a>
+                <ul class="dropdown-menu">
+                    {% for block in page.body %}
+                        {% if block.block_type == 'heading' %}
+                        <li><a class="dropdown-item" href="#{{ block.id }}">{{ block.value }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <br>
+        <br>
+
+        {% for block in page.body %}
+            {% if block.block_type == 'heading' %}
+            <br>
+            <div class="row justify-content-center text-center mt-3">
+                <h5 id="{{ block.id }}">{{ block.value }}</h5>
+            </div>
+            {% elif block.block_type == 'text' %}
+            <div class="row justify-content-center mt-1">
+                <div class="mw-700">
+                    {% include_block block %}
+                </div>
+            </div>
+            {% elif block.block_type == 'alert' %}
+            <div class="row justify-content-center mt-1">
+                <div class="mw-700">
+                    <div class="alert alert-info mt-3" role="alert">
+                        {% include_block block %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                <div class="row justify-content-center mt-1">
+                    <div class="mw-700">
+                        {% include_block block %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock body %}
+
+{% block footer %}
+{% footer_tag %}
+{% endblock %}

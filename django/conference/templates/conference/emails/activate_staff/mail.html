@@ -1,0 +1,17 @@
+<h4>Новая заявка на регистрацию сотрудника.</h4>
+
+<p>ФИО: {{ last_name }} {{ first_name }}{% if middle_name %} {{ middle_name }}{% endif %}</p>
+<p>e-mail: {{ email }}</p>
+<p>Секции:</p>
+<ul>
+    {% for section in sections_lst %}
+        <li>{{ section }}</li>
+    {% endfor %}
+</ul>
+<br>
+<p>Для подтверждения регистрации пользователя перейдите по ссылке ниже:</p>
+
+<p><a href="{{ invitation_link }}">{{ invitation_link }}</a></p>
+<p style="font-style: italic; color: gray;">*Эта ссылка будет действовать в течение 48 ч.</p>
+<br>
+<p>Это письмо сформировано автоматически.</p>

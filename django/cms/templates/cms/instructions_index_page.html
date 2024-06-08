@@ -1,0 +1,15 @@
+{% extends "conference/layout.html" %}
+{% load static wagtailcore_tags base_tags %}
+
+{% block title %}
+{% wagtail_site as current_site %}
+{% if current_site and current_site.site_name %}{{ current_site.site_name }}{% endif %}
+{% endblock %}
+
+
+{% block body %}
+{% endblock body %}
+
+{% block footer %}
+{% footer_tag %}
+{% endblock %}

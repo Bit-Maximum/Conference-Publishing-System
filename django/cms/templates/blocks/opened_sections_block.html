@@ -1,0 +1,21 @@
+{% load table_block_tags %}
+
+<table class="table table-bordered mw-700 mb-1 mt-3" style="font-weight: 500;">
+    <tbody>
+    {% for row in data %}
+        <tr>
+            {% for column in row %}
+                <td {% cell_classname row_index col_index table_header %}>
+                    {% if column.strip %}
+                        {% if html_renderer %}
+                            {{ column.strip|safe|linebreaksbr }}
+                        {% else %}
+                            {{ column.strip|linebreaksbr }}
+                        {% endif %}
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

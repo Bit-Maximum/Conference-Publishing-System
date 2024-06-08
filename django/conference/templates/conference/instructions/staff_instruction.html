@@ -1,0 +1,312 @@
+{% extends "conference/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container-xxl">
+    <div class="row justify-content-center">
+
+        <div class="row justify-content-center text-center mt-3">
+            <h4>Инструкция для сотрудников</h4>
+        </div>
+        <div class="row justify-content-center text-center mt-3">
+            <div class="mw-700">
+                <p class="large">Работу над докладами можно осуществлять через ваш <a href="{% url 'profile' %}" target="_blank">личный кабинет</a>.</p>
+            </div>
+        </div>
+        <div class="row justify-content-center text-center mt-3">
+            <div class="dropdown">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Навигация по странице
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#search">Поиск докладов</a></li>
+                    <li><a class="dropdown-item" href="#articles">Работа с докладами</a></li>
+                    <li><a class="dropdown-item" href="#reject">Отклонение докладов</a></li>
+                    <li><a class="dropdown-item" href="#cloud">Работа с облачным хранилищем</a></li>
+                    <li><a class="dropdown-item" href="#advance">Продвинутый поиск докладов</a></li>
+                    <li><a class="dropdown-item" href="#comments">Оставление комментариев к докладам</a></li>
+                    <li><a class="dropdown-item" href="#section">Смена секции</a></li>
+                    <li><a class="dropdown-item" href="#fullname">Изменение личной информации</a></li>
+                </ul>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3" id="search">
+            <h5>Поиск докладов</h5>
+        </div>
+        <div class="row justify-content-center mt-1">
+            <div class="mw-700">
+                <p class="text mb-2">Для начала рассмотрим раздел «Доклады вашей секции». В нём отображаются доклады зарегистрированные в выбранной вами секции конференции. Он может выглядеть следующим образом:</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/1.png' %}" class="img-fluid img-thumbnail" alt="Раздел «Доклады вашей секции»">
+                    <div class="text-end img_subscription">Раздел «Доклады вашей секции»</div>
+                </div>
+                <p class="text mb-2"></p>
+                <p class="text mb-2">Вверху находятся фильтры для отображаемых материалов:</p>
+                <ol class="list-group list-group-numbered">
+                    <li class="list-group-item">«Все доклады»: отображаются все доклады в вашей секции (выбран по умолчанию).</li>
+                    <li class="list-group-item">«Только непроверенные»: отображаются только доклады, неотмеченные вами как «проверенные».</li>
+                    <li class="list-group-item">«Только изменённые»: отобразятся только уже проверенные доклады, но в которые с того момента были внесены изменения.</li>
+                    <li class="list-group-item">«Только победители»*: отображаются только доклады, рекомендованные к публикации.</li>
+                    <li class="list-group-item">«Только победители»*: отображаются только доклады, рекомендованные к публикации.</li>
+                </ol>
+                <div class="img_subscription">* Данный фильтр можно комбинировать с другими.</div>
+                <hr>
+                <p class="text mb-2">Чтобы изменить отображаемые доклады выберете нужные вам фильтры и нажмите на кнопку «Отфильтровать».</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/2.png' %}" class="img-fluid img-thumbnail" alt="Фильтры отображаемых докладов">
+                    <div class="text-end img_subscription">Фильтры отображаемых докладов</div>
+                </div>
+                <br>
+                <p class="text mb-2">Ниже располагаются найденные доклады. О каждом докладе выводятся: секция, ключевые слова, тема (с ссылкой на страницу соответствующего доклада). Также под каждым докладом могут отображаться теги, например, «Победитель», «Проверен редактором», «Проверен рецензентом».</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/3.png' %}" class="img-fluid img-thumbnail" alt="Пример отображаемых докладов">
+                    <div class="text-end img_subscription">Пример отображаемых докладов</div>
+                </div>
+                <p class="text mb-2">Чтобы перейти на страницу интересующего вас доклада нажмите на его тему.</p>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3" id="articles">
+            <h5>Работа с докладами</h5>
+        </div>
+        <div class="row justify-content-center mt-1">
+            <div class="mw-700">
+                <p class="text mb-2">На странице доклада отображается вся указанная авторами информация о докладе. Она может выглядеть следующим образом:</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/4.png' %}" class="img-fluid img-thumbnail" alt="Пример страницы доклада">
+                    <div class="text-end img_subscription">Пример страницы доклада</div>
+                </div>
+                <p class="text mb-2">Если автор отправил тезисы доклада, отобразится раздел «Тезисы». Все документы составляются с помощью автоматизированной системы верстки.</p>
+                <p class="text mb-2">Чтобы сформировать и скачать тезисы доклада, оформленные в соответствии с требованиями конференции, нажмите на кнопку «Скачать тезисы доклада». Чтобы скачать исходный документ, отправленный автором, нажмите на название файла напротив строки «Скачать исходный документ».</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/5.png' %}" class="img-fluid img-thumbnail" alt="Раздел «Тезисы»">
+                    <div class="text-end img_subscription">Раздел «Тезисы»</div>
+                </div>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>Если просматриваемый доклад стал призёром в секции и автор загрузил текст доклада, отобразится раздел «Текст доклада». Работа с ним происходит аналогично.</p>
+                    <div class="image_wrapper mt-3 mb-2">
+                        <img src="{% static 'conference/img/staff_instruction/6.png' %}" class="img-fluid img-thumbnail" alt="Раздел «Текст доклада»">
+                        <div class="text-end img_subscription">Раздел «Текст доклада»</div>
+                    </div>
+                </div>
+                <hr>
+                <p class="text mb-2">После того как доклад будет проверен, можно отметить доклад как проверенный. Для этого нажмите на кнопку «Отметить доклад как проверенный / непроверенный», расположенную в верхней части страницы. Чтобы отменить действие, нажмите на неё повторно.</p>
+                <p class="text mb-2">На проверенных редактором и/или рецензентом докладах вверху страницы отображается информация о том, когда и кем он был проверен:</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/7.png' %}" class="img-fluid img-thumbnail" alt="Информация о проверке доклада">
+                    <div class="text-end img_subscription">Информация о проверке доклада</div>
+                </div>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>Данный раздел отображается только сотрудникам. Информация о проверке доклада не видна его авторам.</p>
+                </div>
+                <p class="text mb-2">Система отслеживает вносимые авторами изменения. Если в уже проверенный доклад были внесены изменения, отобразится соответствующая информация:</p>
+                <ol class="list-group list-group-numbered">
+                    <li class="list-group-item"><p>Раздел отображается <strong>зелёным</strong> цветом, если с момента проверки никаких изменений внесено не было.</p>
+                        <div class="image_wrapper mt-3 mb-2">
+                            <img src="{% static 'conference/img/staff_instruction/8.png' %}" class="img-fluid img-thumbnail" alt="Никаких изменений внесено не было">
+                            <div class="text-end img_subscription">Никаких изменений внесено не было</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item"><p>Раздел отображается <strong>жёлтым</strong> цветом, если с момента проверки в некоторые разделы были внесены изменения.</p>
+                        <div class="image_wrapper mt-3 mb-2">
+                            <img src="{% static 'conference/img/staff_instruction/9.png' %}" class="img-fluid img-thumbnail" alt="Внесены изменения в 3 раздела">
+                            <div class="text-end img_subscription">Внесены изменения в 3 раздела</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item"><p>Раздел отображается <strong>красным</strong> цветом, если с момента проверки были внесены множественные изменения и доклад следует проверить повторно.</p>
+                        <div class="image_wrapper mt-3 mb-2">
+                            <img src="{% static 'conference/img/staff_instruction/10.png' %}" class="img-fluid img-thumbnail" alt="Внесены изменения в 5 разделов">
+                            <div class="text-end img_subscription">Внесены изменения в 5 разделов</div>
+                        </div>
+                    </li>
+                </ol>
+                <hr>
+                <p class="text mb-2">Чтобы обновить время проверки доклада дважды нажмите на кнопку «Отметить доклад как проверенный / непроверенный» (1-е нажатие убирает отметку. 2-е - отмечает доклад заново).</p>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>Отслеживание изменений с момента проверки происходит для редакторов и рецензентов независимо друг от друга.</p>
+                    <div class="image_wrapper mt-3 mb-2">
+                        <img src="{% static 'conference/img/staff_instruction/11.png' %}" class="img-fluid img-thumbnail" alt="Доклад проверен редактором и рецензентом в разное время">
+                        <div class="text-end img_subscription">Доклад проверен редактором и рецензентом в разное время</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3" id="reject">
+            <h5>Отклонение докладов</h5>
+        </div>
+        <div class="row justify-content-center mt-1">
+            <div class="mw-700">
+                <p class="text mb-2">У сотрудников есть возможность отклонять доклады. В таком случае они будут помечены как «отклонённые», а также не будут включены в научную программу конференции в случае, если она формируется с помощью сайта конференции.</p>
+                <p class="text mb-2">Чтобы отклонить доклад, перейдите на его страницу на сайте конференции. Затем нажмите на кнопку «Отклонить доклад» в верхней части страницы.</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/22.png' %}" class="img-fluid img-thumbnail" alt="Страница не отклонённого доклада">
+                    <div class="text-end img_subscription">Страница не отклонённого доклада</div>
+                </div>
+                <p class="text mb-2">После нажатия на кнопку «Отклонить доклад» перед вами появится всплывающее окно с просьбой указать причину отклонения доклада.</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/23.png' %}" class="img-fluid img-thumbnail" alt="Всплывающее окно для указания причины отклонения доклада">
+                    <div class="text-end img_subscription">Всплывающее окно для указания причины отклонения доклада</div>
+                </div>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>После нажатия на кнопку «Подтвердить» на e-mail авторов доклада будет отправлено письмо с указанной причиной отклонения.</p>
+                    <div class="image_wrapper mt-3 mb-2">
+                        <img src="{% static 'conference/img/staff_instruction/24.png' %}" class="img-fluid img-thumbnail" alt="Письмо авторам с уведомлением об отклонении их доклада">
+                        <div class="text-end img_subscription">Письмо авторам с уведомлением об отклонении их доклада</div>
+                    </div>
+                </div>
+                <p class="text mb-2">В верхней части страницы отклонённого доклада появится отметка о дате отклонения доклада.</p>
+                <hr>
+                <p class="text mb-2">Отклонённый доклад можно восстановить. Для этого перейдите на страницу соответствующего доклада. Затем нажмите на кнопку «Восстановить доклад».</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/25.png' %}" class="img-fluid img-thumbnail" alt="Страница отклонённого доклада">
+                    <div class="text-end img_subscription">Страница отклонённого доклада</div>
+                </div>
+                <p class="text mb-2">После нажатия на кнопку «Восстановить доклад» перед вами появится всплывающее окно с просьбой указать причину, по которой вы решили восстановить доклад.</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/26.png' %}" class="img-fluid img-thumbnail" alt="Всплывающее окно для указания причины восстановления доклада">
+                    <div class="text-end img_subscription">Всплывающее окно для указания причины восстановления доклада</div>
+                </div>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>После нажатия на кнопку «Подтвердить» на e-mail авторов доклада будет отправлено письмо с указанием причины восстановления доклада.</p>
+                    <div class="image_wrapper mt-3 mb-2">
+                        <img src="{% static 'conference/img/staff_instruction/27.png' %}" class="img-fluid img-thumbnail" alt="Всплывающее окно для указания причины отклонения доклада">
+                        <div class="text-end img_subscription">Письмо авторам с уведомлением об восстановлении их доклада</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3" id="cloud">
+            <h5>Работа с облачным хранилищем</h5>
+        </div>
+        <div class="row justify-content-center mt-1">
+            <div class="mw-700">
+                <p class="text mb-2">Тезисы и тексты докладов регулярно загружаются на сервис «Яндекс Диск». Он выступает в роли централизированного хранилища актуальных версий документов.</p>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>Для получения доступа к облачному хранилищу обратитесь к ведущему специалисту или к начальнику организационного отдела ШИГН.</p>
+                </div>
+                <p class="text mb-2">В корневой директории находятся 3 папки:</p>
+                <ol class="list-group list-group-numbered">
+                    <li class="list-group-item">«Статьи»: содержит оформленные тексты докладов, отсортированные по секциям.</li>
+                    <li class="list-group-item">«Тезисы»: содержит оформленные тезисы докладов, отсортированные по секциям.</li>
+                    <li class="list-group-item">«Оригиналы»: содержит неоформленные документы, присланные авторами. Является технической директорией, необходимой для работы системы.</li>
+                </ol>
+                <hr>
+                <p class="text mb-2">В период активного редактирования авторами своих докладов не рекомендуется вносить изменения в документы напрямую в хранилище с помощью встроенного редактора «Яндекс Диск». Так как авторы могут изменить указанную ими информацию или заменить загруженные файлы, и все внесённые вами изменения будут перезаписаны в соответствии новыми данными.</p>
+                <div class="alert alert-info mt-3" role="alert" id="forth">
+                    <p>Все документы обновляются ежедневно в 03:00 по Владивостокскому времени (если их авторами были внесены какие-либо изменения на сайте конференции).</p>
+                </div>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/12.png' %}" class="img-fluid img-thumbnail" alt="Корневая директория облачного хранилища">
+                    <div class="text-end img_subscription">Корневая директория облачного хранилища</div>
+                </div>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/13.png' %}" class="img-fluid img-thumbnail" alt="Папка «Тезисы»">
+                    <div class="text-end img_subscription">Папка «Тезисы»</div>
+                </div>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/14.png' %}" class="img-fluid img-thumbnail" alt="Пример папки с оформленными документами">
+                    <div class="text-end img_subscription">Пример папки с оформленными документами</div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3" id="advance">
+            <h5>Продвинутый поиск докладов</h5>
+        </div>
+        <div class="row justify-content-center mt-1">
+            <div class="mw-700">
+                <p class="text mb-2">Для того чтобы перейти на страницу поиска докладов, нажмите на кнопку «Продвинутый поиск докладов» или выберете раздел «Все материалы» на панели навигации вверху страницы.</p>
+                <p class="text mb-2">Она представляет собой расширенную систему фильтров для поиска среди всех зарегистрированных на конференции докладов. Она выглядит следующим образом:</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/15.png' %}" class="img-fluid img-thumbnail" alt="Страница «Поиск материалов конференции»">
+                    <div class="text-end img_subscription">Страница «Поиск материалов конференции»</div>
+                </div>
+                <p class="text mb-2">Вверху страницы находятся фильтры, применяемые при поиске. Чтобы найти доклады по указанным вами фильтрам, нажмите на кнопку «Поиск». Чтобы сбросить все фильтры, нажмите на кнопку «Очистить».</p>
+                <p class="text mb-2">Ниже отобразятся найденные доклады с краткой информацией о них. Чтобы перейти на страницу интересующего вас доклада, нажмите на его название.</p>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>При поиске отображаются первые 30 совпадений.</p>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3" id="comments">
+            <h5>Оставление комментариев к докладам</h5>
+        </div>
+        <div class="row justify-content-center mt-1">
+            <div class="mw-700">
+                <p class="text mb-2">Комментарии от редакторской коллегии отображаются на странице доклада в разделе «Комментарии от редакционной коллегии». Над каждым комментарием отображается его отправитель, дата написания и, при наличии, приложения (файлы). Авторам информация об отправителе комментария не отображается.</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/16.png' %}" class="img-fluid img-thumbnail" alt="Раздел «Комментарии от редакционной коллегии»">
+                    <div class="text-end img_subscription">Раздел «Комментарии от редакционной коллегии»</div>
+                </div>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/17.png' %}" class="img-fluid img-thumbnail" alt="Как видят комментарии авторы">
+                    <div class="text-end img_subscription">Как видят комментарии авторы</div>
+                </div>
+                <p class="text mb-2">Чтобы оставить комментарий авторам доклада, нажмите на кнопку «Написать комментарий», находясь на странице нужного материала.</p>
+                <p class="text mb-2">Далее в появившейся форме укажите текст комментария. Опционально: при желании вы можете прикрепить к комментарию до 5 файлов.</p>
+                <p class="text mb-2">Затем нажмите на кнопку «Отправить». Если вы передумали писать комментарий, нажмите на кнопку «Отмена».</p>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>В настоящий момент отсутствует возможность удаления, настройки форматирования или редактирования текста комментариев. Эти функции будут добавлены в одном из ближайших обновлений.</p>
+                </div>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/18.png' %}" class="img-fluid img-thumbnail" alt="Форма добавления комментария">
+                    <div class="text-end img_subscription">Форма добавления комментария</div>
+                </div>
+                <p class="text mb-2">После нажатия на кнопку «Отправить» на e-mail авторов доклада будет отправлено письмо с содержимым комментария.</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/19.png' %}" class="img-fluid img-thumbnail" alt="Пример письма с комментарием">
+                    <div class="text-end img_subscription">Пример письма с комментарием</div>
+                </div>
+                <p class="text mb-2">После отправления вашего первого комментария в личном кабинете появится раздел «Ваши комментарии к докладам», в котором будут отображаться оставленные вами комментарии с указанием даты и ссылкой на соответствующий доклад.</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/20.png' %}" class="img-fluid img-thumbnail" alt="Раздел «Ваши комментарии к докладам» в личном кабинете">
+                    <div class="text-end img_subscription">Раздел «Ваши комментарии к докладам» в личном кабинете</div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3" id="section">
+            <h5>Смена секции</h5>
+        </div>
+        <div class="row justify-content-center mt-1">
+            <div class="mw-700">
+                <p class="text mb-2">Для того чтобы сменить закреплённую за вами секцию, нажмите на кнопку «Сменить секцию» в вашем личном кабинете.</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/21.png' %}" class="img-fluid img-thumbnail" alt="Раздел «Ваша секция»">
+                    <div class="text-end img_subscription">Раздел «Ваша секция»</div>
+                </div>
+                <p class="text mb-2">В появившейся форме выберете нужную вам секцию. Затем нажмите на кнопку «Сохранить». Для отмены действия нажмите на кнопку «Отмена».</p>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>Изменение секции повлечёт за собой смену отображаемых докладов в разделе «Доклады вашей секции».</p>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3" id="fullname">
+            <h5>Изменение личной информации</h5>
+        </div>
+        <div class="row justify-content-center mt-1">
+            <div class="mw-700">
+                <p class="text mb-2">Для того чтобы изменить указанные вами ФИО, нажмите на кнопку «Изменить данные» в вашем личном кабинете в разделе «ФИО».</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/staff_instruction/28.png' %}" class="img-fluid img-thumbnail" alt="Раздел «ФИО»">
+                    <div class="text-end img_subscription">Раздел «ФИО»</div>
+                </div>
+                <p class="text mb-2">В появившейся форме внесите необходимые изменения. Затем нажмите на кнопку «Сохранить». Для отмены действия нажмите на кнопку «Отмена».</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

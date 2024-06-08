@@ -1,0 +1,697 @@
+{% extends "conference/layout.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+<div class="container-xxl no_paddings">
+    {% if article.rejected %}
+    <div class="row justify-content-center text-center mt-3">
+        <div class="col-12 col-lg-6">
+            <div class="alert alert-danger" role="alert">
+                <p class="mb-0">Доклад был отклонён {{ article.rejected|date:"j.m.Y" }}.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if request.user.is_staff %}
+    <div class="row justify-content-center text-center mt-3">
+        <div class="col-12 col-lg-6">
+            {% if article.editor_approved %}
+                {% if editor_outdated.length == 0 %}
+                    <div class="alert alert-success" role="alert">
+                        <p class="mb-0">Доклад проверен редактором {{ article.editor_approved|date:"j.m.Y" }}.</p>
+                    </div>
+                {% else %}
+                    {% if editor_outdated.length >= 4 %}
+                    <div class="alert alert-danger" role="alert">
+                    {% else %}
+                    <div class="alert alert-warning" role="alert">
+                    {% endif %}
+                        <p class="mb-1">Доклад проверен редактором {{ article.editor_approved|date:"j.m.Y" }}.</p>
+                        <p>С того момента были внесены изменения в:</p>
+                        <ul class="list-group list-group-flush">
+                            {% for item in editor_outdated.items %}
+                            <li class="list-group-item">{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-12 col-lg-6">
+            {% if article.reviewer_approved %}
+                {% if reviewer_outdated.length == 0 %}
+                <div class="alert alert-success" role="alert">
+                    <p class="mb-0">Доклад проверен рецензентом {{ article.reviewer_approved|date:"j.m.Y" }}.</p>
+                </div>
+                {% else %}
+                {% if reviewer_outdated.length >= 4 %}
+                <div class="alert alert-danger" role="alert">
+                {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        {% endif %}
+                        <p class="mb-1">Доклад проверен рецензентом {{ article.reviewer_approved|date:"j.m.Y" }}.</p>
+                        <p class="mb-1">С того момента были внесены изменения в:</p>
+                        <ul class="list-group list-group-flush">
+                            {% for item in reviewer_outdated.items %}
+                            <li class="list-group-item">{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="d-flex justify-content-between flex-wrap">
+            <h3 id="header">Страница доклада</h3>
+            {% if request.user.is_staff %}
+            <div class="flex flex-wrap">
+                {% if article.rejected %}
+                <button class="btn btn-warning me-3 mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#modal_reject" id="modal_reject_toggle">Восстановить доклад</button>
+                {% else %}
+                <button class="btn btn-secondary me-3 mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#modal_reject" id="modal_reject_toggle">Отклонить доклад</button>
+                {% endif %}
+                <a href="{% url 'approve_article' article_id=article.id %}" class="btn btn-primary mt-2 mb-2">Отметить доклад как проверенный / непроверенный</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-12 col-lg-7">
+            {% if request.user.is_authenticated and request.user.id in authors_ids %}
+            <div class="wrapper" id="edit_article_info_wrapper" hidden>
+                <h4>Режим редактирования</h4>
+                <form id="edit_article_info_form" action="">
+                    <input class="form-control" disabled type="text" value="{{ article.id }}" name="article_id" id="article_id" placeholder="" hidden>
+                    <div class="form-group">
+                        <label for="edit_section" class="form-label">Секция:</label>
+                        <select class="form-control" name="section" id="edit_section">
+                            <option selected disabled value="None">Выберете секцию</option>
+                            {% for item in sections %}
+                            <option value="{{ item.id }}">{{ item.content }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <hr>
+                    <div class="form-group mb-3">
+                        <label for="edit_title" class="form-label">Тема:</label>
+                        <input class="form-control" disabled type="text" name="title" id="edit_title" placeholder="Тема">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="edit_abstract" class="form-label">Аннотация:</label>
+                        <input class="form-control" disabled type="text" name="abstract" id="edit_abstract" placeholder="Аннотация">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="edit_keywords" class="form-label">Ключевые слова (можно указать до {{ KEYWORDS_MAX_NUM }} пунктов):</label>
+                        <textarea class="form-control" disabled name="keywords" id="edit_keywords" placeholder="Ключевые слова"></textarea>
+                        <label for="edit_keywords" class="form-label">*указываются через запятую с пробелом. Например, «журналистика, СМИ, массовые коммуникации, телевидение».</label>
+                    </div>
+                    <hr>
+                    <div class="form-group mb-3">
+                        <label for="edit_title_translation" class="form-label">Тема на английском языке:</label>
+                        <input class="form-control" disabled type="text" name="title_translation" id="edit_title_translation" placeholder="Тема на английском языке">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="edit_abstract_translation" class="form-label">Аннотация на английском языке:</label>
+                        <input class="form-control" disabled type="text" name="abstract_translation" id="edit_abstract_translation" placeholder="Аннотация на английском языке">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_keywords_translation" class="form-label">Ключевые слова на английском языке (можно указать до {{ KEYWORDS_MAX_NUM }} пунктов):</label>
+                        <textarea class="form-control" disabled name="keywords_translation" id="edit_keywords_translation" placeholder="Ключевые слова на английском языке"></textarea>
+                        <label for="edit_keywords_translation" class="form-label">*указываются через запятую с пробелом. Например, «journalism, media, mass communications, television».</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_grant" class="form-label">Если доклад подготовлен при поддержке гранта, то укажите организацию:</label>
+                        <textarea class="form-control" disabled name="grant" id="edit_grant" placeholder="Поле заполняется, только если доклад подготовлен при поддержке гранта"></textarea>
+                        <label for="edit_grant" class="form-label">*если есть. Например, «Публикация подготовлена при финансовой поддержке Научного фонда ДВФУ (№ ХХХХХХХХХХХХХХ)»</label>
+                    </div>
+                    <hr>
+                    <h5>Данные о научном руководителе.</h5>
+                    <div class="form-group">
+                        <label for="edit_adviser_last_name" class="form-label">Фамилия:</label>
+                        <input class="form-control" type="text" disabled name="adviser_last_name" id="edit_adviser_last_name" placeholder="Фамилия">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_adviser_first_name" class="form-label">Имя:</label>
+                        <input class="form-control" type="text" disabled name="adviser_first_name" id="edit_adviser_first_name" placeholder="Имя">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_adviser_middle_name" class="form-label">Отчество:</label>
+                        <input class="form-control" type="text" disabled name="adviser_middle_name" id="edit_adviser_middle_name" placeholder="Отчество">
+                        <label for="edit_adviser_middle_name" class="form-label">*если есть</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_adviser_last_name_translation" class="form-label">Фамилия на английском языке:</label>
+                        <input class="form-control" type="text" disabled name="adviser_last_name_translation" id="edit_adviser_last_name_translation" placeholder="Фамилия на английском языке">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_adviser_first_name_translation" class="form-label">Имя на английском языке:</label>
+                        <input class="form-control" type="text" disabled name="adviser_first_name_translation" id="edit_adviser_first_name_translation" placeholder="Имя на английском языке">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_adviser_degree" class="form-label">Ученая степень:</label>
+                        <input class="form-control" type="text" name="adviser_degree" disabled id="edit_adviser_degree" placeholder="Ученая степень">
+                        <label for="edit_adviser_degree" class="form-label">*если есть. Указывается сокращённое наименование, например, «канд. ист. наук» - <span class="green">правильно</span>, «Кандидат исторических наук» - <span class="red">неправильно.</span></label>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_academic_title" class="form-label">Ученое звание:</label>
+                        <input class="form-control" type="text" name="academic_title" disabled id="edit_academic_title" placeholder="Ученое звание">
+                        <label for="edit_academic_title" class="form-label">*если есть. Например, «доцент».</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_job_title" class="form-label">Должность:</label>
+                        <input class="form-control" type="text" name="job_title" disabled id="edit_job_title" placeholder="Должность">
+                        <label for="edit_job_title" class="form-label">*если есть</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_adviser_job" class="form-label">Место работы:</label>
+                        <input class="form-control" type="text" name="adviser_job" disabled id="edit_adviser_job" placeholder="Место работы">
+                        <label for="edit_adviser_job" class="form-label">*если есть. Указывается сокращённо, например «ДКМ ШИГН ДВФУ»</label>
+                    </div>
+                    <hr>
+                    <div class="errors_container" id="edit_article_error_container"></div>
+                    <div class="form-buttons margin_top">
+                        <button type="button" class="btn btn-primary margin_right" id="submit_article_info_btn">Сохранить</button>
+                        <div class="spinner-border m-3" role="status" id="loading_article" hidden>
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <button type="button" class="btn btn-secondary" id="cansel_article_edit_btn">Отмена</button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="wrapper" id="article_info">
+                {% if article.is_winner %}
+                <div class="alert alert-success d-inline-block padding_light mb-2" role="alert">
+                    Призёр в секции
+                </div>
+                {% endif %}
+                <div class="section">Секция: <div class="data" data-section="{{ article.section.id }}" id="section">{{ article.section }}</div></div>
+                <hr>
+                <div class="margin_bottom">
+                    <div class="title" id="title">{{ article.title }}</div>
+                    <div class="abstract"><div class="data"  id="abstract">{{ article.abstract }}</div></div>
+                    <div class="keywords"><strong>Ключевые слова: </strong><div class="data"  id="keywords">{{ article.keywords }}</div></div>
+                </div>
+                <hr>
+                <div class="margin_bottom">
+                    <div class="title" id="title_translation">{{ article.title_translation }}</div>
+                    <div class="abstract"><div class="data"  id="abstract_translation">{{ article.abstract_translation }}</div></div>
+                    <div class="keywords"><strong>Ключевые слова на английском языке: </strong><div class="data"  id="keywords_translation">{{ article.keywords_translation }}</div></div>
+                </div>
+                <hr>
+                <div class="margin_bottom">
+                    <h5>Авторы:</h5>
+                    {% for author in authors %}
+                    <div class="wrapper">
+                        {% if request.user.is_staff %}
+                        <div class="author email">
+                            <div class="data">{{ author.email }} </div>
+                        </div>
+                        {% endif %}
+                        <div class="author">
+                            <div class="data">{{ author.last_name }} </div>
+                            <div class="data">{{ author.first_name }} </div>
+                            <div class="data">{{ author.middle_name }}</div>
+                        </div>
+                        {% if author.country and author.city %}
+                        <div class="about_label">
+                            <div class="data"  id="country">{{ author.country }}</div>
+                            <div class="data"  id="city">, {{ author.city }}</div>
+                        </div>
+                        <div class="about_label"><div class="data"  id="institution">{{ author.institution }}</div></div>
+                        <div class="about_label"><div class="data"  id="department">{{ author.department }}</div></div>
+                        <div class="about_label"><div class="data"  id="level">{{ author.level }}</div></div>
+                        <div class="about_label">
+                            <div class="data"  id="major">{{ author.major }}</div>
+                            <div class="data"  id="course">{% if author.course %}, {{ author.course }} курс{% endif %}</div>
+                        </div>
+                        {% if author.winner %}<div class="about_label"><div class="data"  id="winner">Призёр в своей секции</div></div>{% endif %}
+                        {% else %}
+                        <div class="about_label">
+                            <div class="data red">Дополнительная информация не указана</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <hr>
+                <div class="margin_bottom">
+                    <h5>Научный руководитель:</h5>
+                    {% if not article.adviser_middle_name or not article.adviser_first_name %}
+                        <div class="about_label">
+                            <div class="data"  id="missing_adviser">Доклад подготовлен без научного руководителя</div>
+                        </div>
+                    {% endif %}
+                    <div class="adviser">
+                        <div class="data"  id="adviser_last_name">{% if article.adviser_last_name %}{{ article.adviser_last_name }} {% endif %}</div>
+                        <div class="data"  id="adviser_first_name">{% if article.adviser_first_name %}{{ article.adviser_first_name }} {% endif %}</div>
+                        <div class="data"  id="adviser_middle_name">{% if article.adviser_middle_name %}{{ article.adviser_middle_name }}{% endif %}</div>
+                    </div>
+                    <div class="about_label">
+                        <div class="data"  id="adviser_last_name_translation">{% if article.adviser_last_name_translation %}{{ article.adviser_last_name_translation }} {% endif %}</div>
+                        <div class="data"  id="adviser_first_name_translation">{% if article.adviser_first_name_translation %}{{ article.adviser_first_name_translation }}{% endif %}</div>
+                    </div>
+                    <div class="about_label">
+                        <div class="data"  id="adviser_degree">{% if article.adviser_degree %}{{ article.adviser_degree }}{% endif %}</div>
+                    </div>
+                    <div class="about_label">
+                        <div class="data"  id="academic_title">{% if article.academic_title %}{{ article.academic_title }}{% endif %}</div>
+                    </div>
+                    <div class="about_label">
+                        <div class="data"  id="job_title">{% if article.job_title %}{{ article.job_title }}{% endif %}</div>
+                    </div>
+                    <div class="about_label">
+                        <div class="data"  id="adviser_job">{% if article.adviser_job %}{{ article.adviser_job }}{% endif %}</div>
+                    </div>
+                    {% if article.grant %}<hr>{% endif %}
+                    <div class="about_label mb-3">
+                        <div class="grant"><div class="data"  id="grant">{% if article.grant %}{{ article.grant }}{% endif %}</div></div>
+                    </div>
+                </div>
+                {% if request.user.is_authenticated and request.user.id in authors_ids %}
+                <div class="justify-content-between flex margin_top">
+                    <div class="inline">
+                        <button type="button" class="btn btn-primary margin_right" id="edit_article_info_btn">Изменить данные</button>
+                    </div>
+                    <div class="inline">
+                        <a href="{% url 'edit_authorship' article_id=article.id %}" class="btn btn-secondary margin_right" id="edit_article_authors_btn">Изменить список авторов</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div> <!-- Article Info -->
+
+
+        <div class="col-12 col-lg-5"> <!-- Right side -->
+            <!-- Article Thesis -->
+
+            <div class="container" id="article_thesis_container">
+                <div class="article_text" id="thesis_buttons_container">
+                    <h4>Тезисы</h4>
+                    {% if thesis %}
+                    <div class="wrapper">
+                        <div class="download">Инструкция: <a href="{% url 'thesis_instruction' %}" class="data">Требования к тезисам</a></div>
+                        <div class="download">Скачать исходный документ: <a href="{% url 'download_thesis' article_id=article.id %}" class="data"  id="thesis_file_name">{{ thesis.filename }}</a></div>
+                        <div class="error red">{{ form_thesis.file.errors }}</div>
+                        <div class="margin_top">
+                            <button type="button" class="btn btn-primary" data-href="{{ cloud_base_url }}cloud/download/thesis/{{ article.id }}" data-filename="{{ article.title }}" id="thesis_document_download">Скачать тезисы доклада</button>
+                            <div class="margin_top flex_soft align-center" id="download_thesis_wrapper" hidden>
+                                <div class="spinner-border m-3" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="data">Документ формируется...</div>
+                            </div>
+                            {% if request.user.id in authors_ids %}
+                            <button type="button" class="btn btn-secondary margin_right" id="add_or_edit_thesis_btn">
+                                {% if thesis %}Заменить файл{% else %}Загрузить тезисы доклада{% endif %}
+                            </button>
+                            <div class="spinner-border m-3" role="status" id="loading_thesis_doc" hidden>
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <button type="button" class="btn btn-light" id="thesis_modal_btn" data-bs-toggle="modal" data-bs-target="#modal_thesis">
+                                Удалить
+                            </button>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    {% elif request.user.id in authors_ids %}
+                    <div class="download">Инструкция: <a href="{% url 'thesis_instruction' %}" class="data">Требования к тезисам</a></div>
+                    <div class="error red">{{ form_thesis.file.errors }}</div>
+                    <div class="about_label">Пожалуйста, загрузите тезисы доклада.</div>
+                    <button type="button" class="btn btn-primary margin_top" id="add_or_edit_thesis_btn">
+                        Загрузить тезисы доклада
+                    </button>
+                    <div class="spinner-border m-3" role="status" id="loading_thesis_doc" hidden>
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    {% else %}
+                    <div class="about_label">Тезисы доклада не загружены.</div>
+                    {% endif %}
+                </div>
+
+                {% if request.user.id in authors_ids %}
+                <div class="wrapper" id="add_thesis_form_wrapper" hidden>
+                    <h4 class="margin_bottom">Загрузить тезисы доклада</h4>
+                    <form action="{% url 'add_thesis' article_id=article.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" hidden>
+                            <input name="article" type="hidden" value="{{ article.id }}">
+                        </div>
+                        <div class="form-group margin_top margin_bottom">
+                            {{ form_thesis.file|add_label_class:"form_label" }}
+                            {% render_field form_thesis.file class="form_control" required=true %}
+                        </div>
+                        <div class="margin_top">
+                            <button type="submit" class="btn btn-primary margin_right" id="thesis_submit_btn">Сохранить</button>
+                            <div class="spinner-border m-3" role="status" id="loading_thesis_send" hidden>
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="close_thesis_form_btn">Отмена</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal Delete Article Thesis -->
+                <div class="modal fade" id="modal_thesis" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal_thesis_Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modal_thesis_Label">Подтверждение действия</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5>Вы действительно хотите удалить загруженные материалы?</h5>
+                                <h6>Файл можно будет загрузить повторно позже.</h6>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                    <a href="{% url 'delete_thesis' article_id=article.id %}" class="btn btn-primary">Да, я хочу удалить файл</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <hr>
+            </div>
+
+            <!-- Article Text -->
+            {% if request.user.is_staff or request.user.id in authors_ids %}
+            {% if article.is_winner %}
+            <div class="container" id="article_text_container">
+                <div class="article_text" id="article_text_buttons_container">
+                    <h4>Текст доклада</h4>
+                    {% if text %}
+                    <div class="wrapper">
+                        <div class="download">Инструкция: <a href="{% url 'article_instruction' %}" class="data">Требования к тексту доклада</a></div>
+                        <div class="download">Скачать исходный документ: <a href="{% url 'download_text' article_id=article.id %}" class="data"  id="file_name">{{ text.filename }}</a></div>
+                        <div class="error red">{{ form_text.file.errors }}</div>
+                        <div class="margin_top">
+                            <button type="button" class="btn btn-primary" data-href="{{ cloud_base_url }}cloud/download/article/{{ article.id }}" data-filename="{{ article.title }}" id="article_document_download">Скачать тезисы доклада</button>
+                            <div class="margin_top flex_soft align-center" id="download_article_wrapper" hidden>
+                                <div class="spinner-border m-3" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="data">Документ формируется...</div>
+                            </div>
+                            {% if request.user.id in authors_ids %}
+                            <button type="button" class="btn btn-secondary margin_right" id="edit_or_edit_article_text_btn">
+                                {% if text %}Заменить файл{% else %}Загрузить текст доклада{% endif %}
+                            </button>
+                            <button type="button" class="btn btn-light" id="modal_btn_first" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                Удалить
+                            </button>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    {% elif request.user.is_staff %}
+                    <div class="about_label">Текст доклада не загружен.</div>
+                    {% elif request.user.id in authors_ids %}
+                    <div class="download">Инструкция: <a href="{% url 'article_instruction' %}" class="data">Требования к тексту доклада</a></div>
+                    <div class="error red">{{ form_text.file.errors }}</div>
+                    <div class="about_label">Пожалуйста, загрузите текст доклада.</div>
+                    <button type="button" class="btn btn-primary margin_top" id="edit_or_edit_article_text_btn">
+                        Загрузить текст доклада
+                    </button>
+                    {% endif %}
+                </div>
+
+                {% if request.user.id in authors_ids %}
+                <div class="wrapper" id="add_article_text_form_wrapper" hidden>
+                    <h4 class="margin_bottom">Загрузить текст доклада</h4>
+                    <form action="{% url 'article' article_id=article.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" hidden>
+                            <input name="article" type="hidden" value="{{ article.id }}">
+                        </div>
+                        <div class="form-group margin_top margin_bottom">
+                            {{ form_text.file|add_label_class:"form_label" }}
+                            {% render_field form_text.file class="form_control" required=true %}
+                        </div>
+                        <div class="margin_top">
+                            <button type="submit" class="btn btn-primary margin_right" id="article_submit_btn">Сохранить</button>
+                            <div class="spinner-border m-3" role="status" id="loading_article_send" hidden>
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="close_article_text_form_btn">Отмена</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal Delete Article Text -->
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Подтверждение действия</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5>Вы действительно хотите удалить загруженные материалы?</h5>
+                                <h6>Файл можно будет загрузить повторно позже.</h6>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                    <a href="{% url 'delete_text' article_id=article.id %}" class="btn btn-primary">Да, я хочу удалить файл</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <hr>
+            </div>
+            {% endif %}
+            {% endif %}
+
+
+            <div class="container" id="article_sources_container">
+                {% if sources %}
+                <h4>Используемые источники</h4>
+                {% endif %}
+
+                {% if request.user.id in authors_ids %}
+                <button type="button" class="btn btn-primary" id="add_source_form_btn">Указать источник</button>
+
+                <div class="wrapper" id="add_source_form_wrapper" hidden>
+                    <h3>Указать используемый источник</h3>
+                    <form action="{% url 'add_source' article_id=article.id %}" method="post">
+                        <div class="alert alert-info margin_bottom margin_top" role="alert">
+                            <div class="about_label">Источники указываются по одному за раз. Список литературы оформляется в соответствии с требованиями <a href="https://www.dvfu.ru/upload/medialibrary/ff5/gost-p-7-0-100-2018.pdf" target="_blank">ГОСТ Р 7.0.100-2018. «Библиографическая запись. Библиографическое описание»</a></div>
+                        </div>
+                        {% csrf_token %}
+                        <div class="form-group margin_bottom">
+                            <label for="source_content" class="form-label">Библиографическая запись:</label>
+                            <textarea class="form-control" rows="5" required name="source_content" id="source_content" placeholder="Пример: Авдеева, Н. В. Структурирование научной статьи в формате «Introduction, Methods, Results and Discussion» : что важно учитывать начинающему автору / Н. В. Авдеева, Г. А. Лобанова // Открытое образование. — 2016. — Т. 20. — № 5. — С. 4–10. – URL : https://www.dvfu.ru/upload/medialibrary/ff5/gost-p-7-0-100-2018.pdf  (дата обращения: 01.01.2024)."></textarea>
+                        </div>
+                        <div class="margin_top">
+                            <button type="submit" class="btn btn-primary margin_right" id="submit_source_form_btn">Сохранить</button>
+                            <button type="button" class="btn btn-secondary" id="close_source_form_btn">Отмена</button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+
+                <div class="source" id="sources_container">
+                    {% if sources %}
+                    {% for source in sources %}
+                    <div class="wrapper">
+                        <div class="flex">
+                            <div class="flex">
+                                <div class="source_header me-3">{{ forloop.counter }}</div>
+                            </div>
+                            <div class="vr"></div>
+                            <div class="flex">
+                                <div class="margin_bottom ms-3">{{ source.content }}</div>
+                            </div>
+                        </div>
+                        {% if request.user.id in authors_ids %}
+                        <button type="button" class="btn btn-secondary mt-3"  data-id="{{ source.id }}" onclick="toggle_source_remove_modal('{{ source.id }}')" data-bs-toggle="modal" data-bs-target="#source_modal">
+                            Удалить
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="about_label">Источники не указаны.</div>
+                    {% endif %}
+                    <hr>
+                </div>
+
+
+                {% if request.user.id in authors_ids %}
+                <!-- Modal Delete Article Text -->
+                <div class="modal fade" id="source_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="source_modal_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="source_modal_label">Подтверждение действия</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="modal_body_title">Вы действительно хотите удалить указанный источник?</div>
+                                <div class="modal_body_title">Источник можно будет указать повторно позже.</div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                    <a href="{% url 'delete_source' source_id=0 %}" class="btn btn-primary" id="delete_source_url">Да, я хочу удалить источник</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="container" id="article_comments_container">
+                {% if request.user.id in authors_ids or request.user.is_staff %}
+                    {% if comments %}
+                    <h4>Комментарии от редакционной коллегии</h4>
+                    {% endif %}
+                    {% if request.user.is_staff %}
+                    <div class="wrapper" id="comment_form_wrapper" hidden>
+                        <form action="{% url 'comment' article_id=article.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                {{ form_comment.text|add_label_class:"d-block mb-1" }}
+                                {% render_field form_comment.text class="form_control w-100" required=true %}
+                            </div>
+                            <div class="form-group mt-2">
+                                {{ form_comment.files|add_label_class:"d-block mb-1" }}
+                                {% render_field form_comment.files class="form_control" %}
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" disabled class="btn btn-primary margin_right" id="submit_comment_btn">Отправить</button>
+                                <div class="spinner-border m-3" role="status" id="loading_comment_send" hidden>
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <button type="button" class="btn btn-secondary" id="cancel_comment_btn">Отмена</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <button type="button" class="btn btn-primary margin_top margin_bottom" id="add_comment_btn">Написать комментарий</button>
+                    {% endif %}
+
+                    {% for item in comments %}
+                    <div class="wrapper comment_wrapper">
+                        {% if request.user.is_staff %}<div class="about_label">От: <div class="data">{{ item.comment.editor }}</div></div>{% endif %}
+                        <div class="about_label">Дата написания: <div class="data">{{ item.comment.creation_date }}</div></div>
+                        <hr>
+                        <div class="about_label"><div class="data">{{ item.comment.content }}</div></div>
+                        {% if item.attachments %}
+                        <hr>
+                        <div class="about_label mb-2">Приложения к комментарию:</div>
+                        <ol class="list-group list-group-numbered">
+                            {% for attachment in item.attachments %}
+                            <li class="list-group-item"><a href="{% url 'download_attachment' attachment_id=attachment.id %}">{{ attachment.filename }}</a></li>
+                            {% endfor %}
+                        </ol>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                {% endif %}
+            </div>
+
+            <!-- Modal Download Errors -->
+            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_errors" hidden id="modal_errors_toggle">Показать ошибки при составлении документа</button>
+
+            <div class="modal fade" id="modal_errors" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal_errors_label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modal_errors_label">Произошла ошибка</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h6>Во время составления документа произошла ошибка по следующим причинам:</h6>
+                            <div id="errors_container">
+                                <ul class="list-group list-group-flush" id="errors_wrapper">
+
+                                </ul>
+                            </div>
+                            {% if request.user.id in authors_ids %}
+                            <p>Пожалуйста, исправьте указанные недочёты и попробуйте ещё раз.</p>
+                            {% elif request.user.is_staff %}
+                            <h6>Пожалуйста, попробуйте ещё раз позже. Вы также можете сообщить авторам о недочётах, оставив комментарий к данному докладу.</h6>
+                            {% else %}
+                            <h6>Пожалуйста, попробуйте ещё раз позже.</h6>
+                            {% endif %}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть сообщение</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if request.user.is_staff %}
+            <div class="modal fade" id="modal_reject" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal_reject_label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modal_reject_label">{% if article.rejected %}Восстановить доклад{% else %}Отклонить доклад{% endif %}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% if article.rejected %}
+                            <h6>Пожалуйста, укажите причину, по которой вы решили восстановить доклад.</h6>
+                            {% else %}
+                            <h6>Пожалуйста, укажите причину, по которой вы отклонили доклад.</h6>
+                            {% endif %}
+                            <p>Она будет сообщена в электронном письме авторам доклада.</p>
+                            <form action="{% url 'reject_article' article_id=article.id %}" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="comment_content" class="form-label">Причина:</label>
+                                    <textarea class="form-control" rows="5" required name="cause" id="cause" placeholder="Причина"></textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary margin_right" id="submit_reject_btn">Подтвердить</button>
+                                    <div class="spinner-border m-3" role="status" id="loading_reject_send" hidden>
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block script %}
+<script>
+    var CSRFTOKEN = '{{ csrf_token }}';
+</script>
+<script src="{% static 'conference/js/cloud.js' %}"></script>
+
+{% if request.user.is_authenticated and request.user.id in authors_ids %}
+<script src="{% static 'conference/js/article_author.js' %}"></script>
+{% endif %}
+
+{% if request.user.is_authenticated and request.user.id in authors_ids and request.user.is_winner %}
+<script src="{% static 'conference/js/article_winner.js' %}"></script>
+{% endif %}
+
+{% if request.user.is_authenticated and request.user.is_staff %}
+<script src="{% static 'conference/js/article_staff.js' %}"></script>
+{% endif %}
+
+{% if check_thesis %}
+<script src="{% static 'conference/js/check_thesis.js' %}"></script>
+{% endif %}
+
+{% if check_text %}
+<script src="{% static 'conference/js/check_text.js' %}"></script>
+{% endif %}
+{% endblock %}

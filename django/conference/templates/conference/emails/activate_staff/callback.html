@@ -1,0 +1,15 @@
+{% extends "conference/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="wrapper form_wrapper">
+            {% if success %}
+            <p>Аккаунт сотрудника успешно активирован. Он может войти в свой профиль</p>
+            {% else %}
+                <p>Ошибка, ссылка не действительна.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
