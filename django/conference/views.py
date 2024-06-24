@@ -296,6 +296,7 @@ def add_article_thesis(request, article_id):
         "thesis": thesis,
         "sources": [s.serialize() for s in sources],
         "form_thesis": ArticleThesisForm(),
+        "form_thesis": ArticleThesisForm(),
         "form_text": ArticleTextForm(),
         "editor_outdated": editor_outdated,
         "reviewer_outdated": reviewer_outdated,
@@ -675,6 +676,7 @@ def register_secondary(request):
             return HttpResponseRedirect(reverse("profile"))
         return render(request, "conference/register/register_secondary.html",
                       {"education": EDUCATION_LEVELS.keys()})
+
 
 @login_required
 def comment(request, article_id):
@@ -1086,8 +1088,10 @@ def edit_article_info(request):
             grant = data.get("edit_grant").strip()
 
             # ВАЛИДАЦИЯ ОСНОВНОЙ ИНФОРМАЦИИ
-            title_length, abstract_length, keywords_length = ControlsPage.objects.first().values_list(
-                'title_length', 'abstract_length', 'keywords_length')
+            controls_page = ControlsPage.objects.first()
+            title_length = controls_page.title_length
+            abstract_length = controls_page.abstract_length
+            keyword_length = controls_page.keyword_length
 
             if len(title) > title_length:
                 errors.append(f'Слишком длинная тема. Максимальная длина - {title_length} символов.')
@@ -1100,10 +1104,10 @@ def edit_article_info(request):
                 errors.append(
                     f'Слишком длинный перевод аннотации. Максимальная длина - {abstract_length} символов.')
 
-            if len(keywords.split(', ')) > keywords_length:
-                errors.append(f'Слишком много ключевых слов. Максимальное количество - {keywords_length}.')
-            if len(keywords_translation.split(', ')) > keywords_length:
-                errors.append(f'Слишком много ключевых слов. Максимальное количество - {keywords_length}.')
+            if len(keywords.split(', ')) > keyword_length:
+                errors.append(f'Слишком много ключевых слов. Максимальное количество - {keyword_length}.')
+            if len(keywords_translation.split(', ')) > keyword_length:
+                errors.append(f'Слишком много ключевых слов. Максимальное количество - {keyword_length}.')
             if len(errors) > 0:
                 errors.append('Проверьте введенные данные и попробуйте ещё раз.')
                 return JsonResponse({'errors': errors, 'success': False})
@@ -1221,9 +1225,11 @@ def find_user(request):
     """API поиска пользователя по e-mail"""
     if request.method == "POST":
         data = json.loads(request.body)
-        if CustomUser.objects.filter(email=data.get("email"), is_staff=False, is_verified=True).exists():
+        if CustomUser.objects.filter(email=data.get("email"), is_staff=False).exists():
             user = CustomUser.objects.get(email=data.get("email"))
-            return JsonResponse(user.serialize())
+            if user.is_verified:
+                return JsonResponse(user.serialize())
+            return JsonResponse({'error': 'Пользователь найден, однако сперва он должен подтвердить свой адрес электронной почты.'})
         return JsonResponse({'error': 'Пользователь с указанным e-mail не зарегистрирован.'})
     return JsonResponse({'log': 'Неверный метод.'})
 
@@ -1322,8 +1328,10 @@ def register_article(request):
         grant = data.get("grant").strip()
 
         # ВАЛИДАЦИЯ ОСНОВНОЙ ИНФОРМАЦИИ
-        title_length, abstract_length, keywords_length = ControlsPage.objects.first().values_list(
-            'title_length', 'abstract_length', 'keywords_length')
+        controls_page = ControlsPage.objects.first()
+        title_length = controls_page.title_length
+        abstract_length = controls_page.abstract_length
+        keyword_length = controls_page.keyword_length
 
         if len(title) > title_length:
             errors.append(f'Слишком длинная тема. Максимальная длина - {title_length} символов.')
@@ -1335,10 +1343,10 @@ def register_article(request):
         if len(abstract_translation) > abstract_length:
             errors.append(f'Слишком длинный перевод аннотации. Максимальная длина - {abstract_length} символов.')
 
-        if len(keywords.split(', ')) > keywords_length:
-            errors.append(f'Слишком много ключевых слов. Максимальное количество - {keywords_length}.')
-        if len(keywords_translation.split(', ')) > keywords_length:
-            errors.append(f'Слишком много ключевых слов. Максимальное количество - {keywords_length}.')
+        if len(keywords.split(', ')) > keyword_length:
+            errors.append(f'Слишком много ключевых слов. Максимальное количество - {keyword_length}.')
+        if len(keywords_translation.split(', ')) > keyword_length:
+            errors.append(f'Слишком много ключевых слов. Максимальное количество - {keyword_length}.')
 
         # ИНФОРМАЦИЯ О НАУЧНОМ РУКОВОДИТЕЛЕ
         if data.get("adviser_block") == "on":

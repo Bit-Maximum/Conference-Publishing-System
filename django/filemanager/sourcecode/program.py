@@ -26,7 +26,7 @@ def compose_program(doc_out, data):
 
 
 def compose_program_section(output, data):
-    compose_heading(output, data.get("section"), data.get("moderator"))
+    compose_heading(output, data.get("section"), data.get("moderator", None), data.get("conference_name"))
     compose_table(output, data)
     compose_subscription(output)
 
@@ -42,49 +42,51 @@ def set_markup(document):
         section.left_margin = Cm(2)
 
 
-def compose_heading(document, section_name, moderator: dict):
-    compose_section_name(document, section_name=section_name)
+def compose_heading(document, section_name, moderator: dict, conference_name: str):
+    compose_section_name(document, section_name=section_name, conference_name=conference_name)
     add_blank_lines(document)
 
-    compose_moderator(
-            document,
-            name=moderator.get("name"),
-            degree=moderator.get("degree"),
-            academic_title=moderator.get("academic_title"),
-            job_title=moderator.get("job_title"),
-            job=moderator.get("job")
-        )
-    add_blank_lines(document)
+    if moderator is not None:
+        compose_moderator(
+                document,
+                name=moderator.get("name"),
+                degree=moderator.get("degree"),
+                academic_title=moderator.get("academic_title"),
+                job_title=moderator.get("job_title"),
+                job=moderator.get("job")
+            )
+        add_blank_lines(document)
 
 
-def compose_section_name(document, section_name):
+def compose_section_name(document, section_name, conference_name):
         p = set_align_center_paragraph(document)
         run = p.add_run(f"Научная программа секции «{section_name}»")
         header_run_style(run)
         fix_hanging_prepositions(p)
 
-        p = set_align_center_paragraph(document)
-        run = p.add_run(f"ХIII научно-практической конференции студентов и аспирантов")
-        header_run_style(run)
+        # p = set_align_center_paragraph(document)
+        # run = p.add_run(f"ХIII научно-практической конференции студентов и аспирантов")
+        # header_run_style(run)
 
         p = set_align_center_paragraph(document)
-        run = p.add_run(f"«Humaniora Forum – 2024»")  # TODO: set custom title
+        run = p.add_run(f"«{conference_name}»")
         header_run_style(run)
 
 
 def compose_moderator(document, name: str = None, degree: str = None, academic_title: str = None, job_title: str = None, job: str = None, fix_hanging: bool = False):
-    academic_title = academic_title if academic_title else "ученое звание отсутствует"
 
     if job_title and job:
-        job_string = f"{job_title} {job}"
+        job_string = f", {job_title} {job}"
     elif job:
-        job_string = job
+        job_string = f" {job}"
     elif job_title:
-        job_string = job_title
+        job_string = f", {job_title}"
     else:
         job_string = None
 
-    tun_text = f"{degree}, {academic_title}, {job_string}" if job_string else f"{degree}, {academic_title}"
+    adviser_title = ', '.join([degree, academic_title])
+
+    tun_text = f"{adviser_title}{job_string}" if job_string else adviser_title
 
     p = set_align_center_paragraph(document)
     run = p.add_run(f"Модератор:\u00A0")

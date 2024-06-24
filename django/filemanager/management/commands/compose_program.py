@@ -15,10 +15,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         data = get_articles_info_by_sections()
         print("Данные собраны")
+        temp_dir = os.path.join(TEMP_FILE_DIR, "program")
+        path_to_file = os.path.join(temp_dir, "Научная программа.docx")
+        os.makedirs(temp_dir)
         try:
-            temp_dir = os.path.join(TEMP_FILE_DIR, "program")
-            path_to_file = os.path.join(temp_dir, "Научная программа.docx")
-            os.makedirs(temp_dir)
             compose_program(
                 doc_out=path_to_file,
                 data=data

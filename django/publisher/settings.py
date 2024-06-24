@@ -128,6 +128,10 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 STATIC_URL = "static/"
 
+# Used to distinguish between cross-platform static files
+# since production requires STATIC_ROOT, but local development requires STATIC_URL
+STATIC_CROSS_PLATFORM = os.path.join(BASE_DIR, "static")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

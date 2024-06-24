@@ -12,30 +12,49 @@ from filemanager.views import (clear_garbage, compose_document_if_not_exists, ge
                                get_collection_title_data, clear_editors, get_sections_data, compose_article)
 from publisher.settings import (YADISK_TOKEN, YADISK_BASE_PATH, YADISK_ORIGINALS_THESIS_PATH,
                                 YADISK_ORIGINALS_ARTICLE_PATH, YADISK_THESIS_PATH, YADISK_ARTICLE_PATH,
-                                TEMP_FILE_DIR)
+                                TEMP_FILE_DIR, YADISK_ORIGINALS_DIR, YADISK_MAILINGS_SEND_PROGRAM_PATH,
+                                YADISK_MAILINGS_BASE_PATH)
+
+
+def try_to_create_dir(y, path):
+    try:
+        y.mkdir(path)
+    except Exception as e:
+        print(e)
+        print(f"Directory already exist: {path}")
 
 
 @shared_task
 def task_setup_cloud_structure():
     y = yadisk.YaDisk(token=YADISK_TOKEN)
-    y.mkdir(YADISK_BASE_PATH)
-    y.mkdir(f"{YADISK_BASE_PATH}/Оригиналы")
-    y.mkdir(YADISK_ORIGINALS_THESIS_PATH)
-    y.mkdir(YADISK_ORIGINALS_ARTICLE_PATH)
-    y.mkdir(YADISK_THESIS_PATH)
-    y.mkdir(YADISK_ARTICLE_PATH)
+    try_to_create_dir(y, YADISK_BASE_PATH)
+    try_to_create_dir(y, f"{YADISK_BASE_PATH}/{YADISK_ORIGINALS_DIR}")
+    try_to_create_dir(y, YADISK_ORIGINALS_THESIS_PATH)
+    try_to_create_dir(y, YADISK_ORIGINALS_ARTICLE_PATH)
+    try_to_create_dir(y, YADISK_THESIS_PATH)
+    try_to_create_dir(y, YADISK_ARTICLE_PATH)
+    try_to_create_dir(y, YADISK_MAILINGS_BASE_PATH)
+    try_to_create_dir(y, YADISK_MAILINGS_SEND_PROGRAM_PATH)
     print("Base structure created")
 
     opened_sections = Section.objects.filter(open=True).values_list("content", flat=True)
     for item in opened_sections:
-        y.mkdir(f"{YADISK_THESIS_PATH}/{item}")
+        try:
+            y.mkdir(f"{YADISK_THESIS_PATH}/{item}")
+        except Exception as e:
+            print(e)
+            print(f"Thesis directory already exist: {item}")
     print("Thesis structure created")
 
     for item in opened_sections:
-        y.mkdir(f"{YADISK_ARTICLE_PATH}/{item}")
+        try:
+            y.mkdir(f"{YADISK_ARTICLE_PATH}/{item}")
+        except Exception as e:
+            print(e)
+            print("-------")
+            print(f"Articles directory already exist: {item}")
     print("Article structure created")
-    print("Setup cloud structure done")
-    return
+    print("Done")
 
 
 @shared_task
@@ -58,8 +77,8 @@ def task_compose_program():
     print("Данные собраны")
     temp_dir = os.path.join(TEMP_FILE_DIR, "program")
     path_to_file = os.path.join(temp_dir, "Научная программа.docx")
+    os.makedirs(temp_dir)
     try:
-        os.makedirs(temp_dir)
         compose_program(
             doc_out=path_to_file,
             data=data

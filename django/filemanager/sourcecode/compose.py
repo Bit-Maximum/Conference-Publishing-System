@@ -17,7 +17,7 @@ from .styles import *
 from .shapes import paragraph_contains_formula, paragraph_contains_image, collect_images, add_border, \
     remove_images_directory, paragraph_contains_numbering
 
-from conference.config.conference_config import OVERWRITE_ACADEMIC_TITLE
+from cms.models import ControlsPage
 
 
 def compose_document(doc_in, doc_out, data, session_num, img_dir, fix_hanging=False, doc_type="thesis", path_to_file_out=None):
@@ -64,7 +64,7 @@ def compose_heading(document, data: dict, doc_type="thesis"):
             degree=data.get("adviser").get("degree"),
             academic_title=data.get("adviser").get("academic_title"),
             job_title=data.get("adviser").get("job_title"),
-            job=data.get("adviser").get("job")
+            job=data.get("adviser").get("job"),
         )
         add_blank_lines(document)
 
@@ -161,20 +161,21 @@ def compose_collection_authors(document, names, cities):
 
 
 def compose_adviser(document, name: str = None, degree: str = None, academic_title: str = None, job_title: str = None, job: str = None, fix_hanging: bool = False):
-    if OVERWRITE_ACADEMIC_TITLE:
+    if ControlsPage.objects.first().overwrite_academic_title:
         academic_title = academic_title if academic_title else "ученое звание отсутствует"
 
     if job_title and job:
-        job_string = f"{job_title} {job}"
+        job_string = f", {job_title} {job}"
     elif job:
-        job_string = job
+        job_string = f" {job}"
     elif job_title:
-        job_string = job_title
+        job_string = f", {job_title}"
     else:
         job_string = None
 
-    adviser_title = f"{degree}, {academic_title}" if degree else academic_title
-    tun_text = f"{adviser_title} {job_string}" if job_string else adviser_title
+    adviser_title = ', '.join([degree, academic_title])
+
+    tun_text = f"{adviser_title}{job_string}" if job_string else adviser_title
 
     p = set_align_right_paragraph(document)
     run = p.add_run("Научный руководитель:")
@@ -601,7 +602,7 @@ def compose_main(doc_out, doc_in, imgs, title=None, fix_hanging: bool = False, h
 
     if list_number_counter == 1:
         # Если только один элемент в списке, то предполагаем, что списком оформили
-        # только первый параграф и далее есть остальные начинающиеся с 2)
+        # только первый параграф и далее есть остальные, начинающиеся с 2)
 
         last_list_number_pointer.style = None
         last_list_number_pointer.runs[0].text = f"1) {last_list_number_pointer.runs[0].text}"
@@ -693,11 +694,26 @@ def copy_document(doc_out, doc_in, images, starting_index=0, fix_hanging: bool =
                         copy_run_style(run_out, run_in)
                         change_font_size(run_out, 14)
                 else:
-                    # TODO: Вместо обычной нумерации вставлять перед параграфом простой текст f'{list_number_counter})_неразрывный_пробел_' и обнулять counter перед вёрсткой каждой статьи
-                    direct_insert(doc_out, element)
-                    p_out = doc_out.paragraphs[-1]
-                    for run_out in p_out.runs:
+                    p_out = doc_out.add_paragraph()
+                    copy_paragraph_style(p_out, element)
+                    p_out.style = 'List Bullet'
+                    p_out.paragraph_format.tab_stops.add_tab_stop(Cm(1.75), WD_TAB_ALIGNMENT.LEFT, WD_TAB_LEADER.SPACES)
+                    for run_in in element.runs:
+                        run_out = p_out.add_run(re.sub(r" +", " ", run_in.text))
+                        copy_run_style(run_out, run_in)
                         change_font_size(run_out, 14)
+
+                    # TODO: Закоментирован старый подход. Direct_insert вставлял параграф,
+                    #       однако случайным образом мог пропустить следующий за ним.
+                    #       В связи с этим было решено использовать подход как и при первоначальной вёрстке документов.
+
+                    # direct_insert(doc_out, element)
+                    # print(doc_out.paragraphs[-1].text)
+
+                    # p_out = doc_out.paragraphs[-1]
+                    # for run_out in element.runs:
+                    #     change_font_size(run_out, 14)
+                    # print(doc_in.elements[i + 1].text)
                 i += 1
                 continue
 

@@ -17,6 +17,7 @@ from filemanager.sourcecode.collection import compose_collection_imprint, compos
 from filemanager.sourcecode.program import compose_program
 from filemanager.sourcecode.compose import compose_document
 
+from wagtail.models import Site
 
 
 def upload_file(file_or_path, path_to, cloud=None):
@@ -124,17 +125,17 @@ def get_thesis_or_article(request, doc_type, article_id, need_check=None):
     orig_file = get_meta_cloud(f"{cloud_originals_path}/{article_id}.docx", cloud=y)
     if not orig_file:
         if need_check:
-            return JsonResponse({"errors": ["При загрузке документа произошла ошибка. Пожалуйста, повторите попытку позже."]}, status=400)
-        return JsonResponse({"errors": ["В данный момент сервис не может обработать ваш запрос. Пожалуйста, повторите попытку позже."]}, status=400)
+            return JsonResponse({"errors": ["При загрузке документа произошла ошибка. Пожалуйста, повторите попытку позже."]}, status=404)
+        return JsonResponse({"errors": ["В данный момент сервис не может обработать ваш запрос. Пожалуйста, повторите попытку позже."]}, status=404)
 
     try:
         data, lst_updated, missing = get_info(article_id, doc_type=doc_type)
         if need_edit and len(missing) > 0:
-            return JsonResponse({"errors": missing}, status=400)
+            return JsonResponse({"errors": missing}, status=424)
     except Exception as e:
-        return JsonResponse({"errors": ["Не все обязательные поля заполнены. Для исправления ошибки обратитесь к инструкции."]}, status=400)
+        return JsonResponse({"errors": ["Не все обязательные поля заполнены. Для исправления ошибки обратитесь к инструкции."]}, status=424)
 
-    if (not need_check or not need_edit) and check_file_exists_cloud(f"{cloud_doc_path}/{data.get('section').get('content')}/{data.get('query')}.docx", cloud=y):
+    if not need_check and check_file_exists_cloud(f"{cloud_doc_path}/{data.get('section').get('content')}/{data.get('query')}.docx", cloud=y):
         cloud_meta = get_meta_cloud(f"{cloud_doc_path}/{data.get('section').get('content')}/{data.get('query')}.docx", cloud=y)
         if not need_edit or up_to_date(cloud_meta.modified, lst_updated + [orig_file.modified]):
             with NamedTemporaryFile(suffix='.docx') as temp_file:
@@ -143,29 +144,29 @@ def get_thesis_or_article(request, doc_type, article_id, need_check=None):
                 except Exception as e:
                     return JsonResponse(
                         {"errors": ["Во время скачивания документа произошла ошибка. Попробуйте ещё раз позже."]},
-                        status=400)
+                        status=503)
                 try:
                     temp_file.seek(0)
                     file_bytes = temp_file.read()
                 except Exception as e:
                     return JsonResponse(
                         {"errors": ["Во чтения документа произошла ошибка. Попробуйте ещё раз позже."]},
-                        status=400)
+                        status=523)
                 try:
                     response = FileResponse(io.BytesIO(file_bytes), as_attachment=True, filename=f"{data.get('title')}.docx")
                     return response
                 except Exception as e:
-                    return JsonResponse({"errors": ["Во время отправки документа произошла ошибка. Попробуйте ещё раз позже."]}, status=500)
+                    return JsonResponse({"errors": ["Во время отправки документа произошла ошибка. Попробуйте ещё раз позже."]},
+                                        status=502)
 
     with NamedTemporaryFile(suffix='.docx') as original_file:
         try:
             y.download(f"{cloud_originals_path}/{article_id}.docx", original_file)
-
             original_file.seek(0)
             if not need_edit:
                 y.upload(original_file, f"{cloud_doc_path}/{data.get('section').get('content')}/{data.get('query')}.docx", overwrite=True)
-                with open(original_file, "rb") as temp_file:
-                    file_bytes = temp_file.read()
+                original_file.seek(0)
+                file_bytes = original_file.read()
             else:
                 temp_dir = os.path.join(TEMP_FILE_DIR, doc_type, str(request.user.id))
                 path_to_file = os.path.join(temp_dir, f"{article_id}.docx")
@@ -189,13 +190,14 @@ def get_thesis_or_article(request, doc_type, article_id, need_check=None):
             return response
 
         except Exception as e:
+            print(e)
             try:
                 shutil.rmtree(temp_dir)
             except Exception:
                 pass
             if need_check:
                 return JsonResponse(
-                    {"errors": ["При загрузке документа произошла ошибка. Пожалуйста, повторите попытку позже."]}, status=400)
+                    {"errors": ["При отправке документа произошла ошибка. Пожалуйста, повторите попытку позже."]}, status=400)
             return JsonResponse({"errors": ["В данный момент сервис не доступен. Попробуйте ещё раз позже."]}, status=400)
 
 
@@ -213,29 +215,29 @@ def compose_document_if_not_exists(article_id, doc_type, cloud=None):
         cloud = yadisk.YaDisk(token=YADISK_TOKEN)
 
     try:
+        need_edit = ControlsPage.objects.first().is_editing_on
         orig_file = get_meta_cloud(f"{cloud_originals_path}/{article_id}.docx", cloud=cloud)
         if not orig_file:
             return 404
 
         data, lst_updated, missing = get_info(article_id)
-        if len(missing) > 0:
-            return False
+        if need_edit and len(missing) > 0:
+            return 424
     except Exception as e:
-        return False
+        return 520
 
     if check_file_exists_cloud(f"{cloud_doc_path}/{data.get('section').get('content')}/{data.get('query')}.docx", cloud=cloud):
         cloud_meta = get_meta_cloud(f"{cloud_doc_path}/{data.get('section').get('content')}/{data.get('query')}.docx", cloud=cloud)
-        if up_to_date(cloud_meta.modified, lst_updated + [orig_file.modified]):
-            return None
+        if not need_edit or up_to_date(cloud_meta.modified, lst_updated + [orig_file.modified]):
+            return 208
 
     with NamedTemporaryFile(suffix='.docx') as original_file:
         try:
-            need_edit = ControlsPage.objects.first().is_editing_on
             cloud.download(f"{cloud_originals_path}/{article_id}.docx", original_file)
             original_file.seek(0)
             if not need_edit:
                 cloud.upload(original_file, f"{cloud_doc_path}/{data.get('section').get('content')}/{data.get('query')}.docx", overwrite=True)
-                return True
+                return 200
 
             temp_dir = os.path.join(TEMP_FILE_DIR, doc_type, f"{article_id}_{article_id}")
             path_to_file = os.path.join(temp_dir, f"{article_id}.docx")
@@ -251,7 +253,7 @@ def compose_document_if_not_exists(article_id, doc_type, cloud=None):
 
             cloud.upload(path_to_file, f"{cloud_doc_path}/{data.get('section').get('content')}/{data.get('query')}.docx", overwrite=True)
             shutil.rmtree(temp_dir)
-            return True
+            return 200
 
         except Exception as e:
             try:
@@ -259,7 +261,7 @@ def compose_document_if_not_exists(article_id, doc_type, cloud=None):
                 shutil.rmtree(temp_dir)
             except Exception:
                 pass
-            return False
+            return 520
 
 
 @login_required
@@ -301,20 +303,21 @@ def download_program(request):
 def get_articles_info_by_sections():
     data = []
     moderators = {}
+    conference_name = str(Site.objects.first().site_name)
     sections = Section.objects.all().order_by('content')
     moderators_raw = SectionModerator.objects.all()
     for moderator in moderators_raw:
         item = {"degree": moderator.degree,
                 "academic_title":  moderator.academic_title,
-                "job_title": moderator.academic_title,
+                "job_title": moderator.job_title,
                 "job": moderator.job,
                 "name": moderator.name}
-        moderators[Section.objects.filter(pk=moderator.section).first().content] = item
+        moderators[moderator.section.strip()] = item
 
     for section in sections:
         section_data = dict()
         section_data['section'] = section.content.strip()
-        section_data['moderator'] = moderators.get(section.content.strip())
+        section_data['moderator'] = moderators.get(section.content.strip(), None)
 
         articles = []
         for article in ArticleInfo.objects.filter(section=section, rejected=None):
@@ -329,6 +332,7 @@ def get_articles_info_by_sections():
             }
             articles.append(article_data)
         section_data['articles'] = articles
+        section_data['conference_name'] = conference_name
         data.append(section_data)
     return data
 
@@ -371,29 +375,30 @@ def clear_garbage(base_path, originals_path, doc_type, exclude_filter=None):
         y.remove(item)
         time.sleep(1)
 
-    originals_storage = [item.pk for item in articles]
-    originals_cloud = [item.name for item in list(y.listdir(originals_path))]
-
-    queries_to_delete = []
-    for item in originals_cloud:
-        if int(item.rstrip(".docx")) not in originals_storage:
-            queries_to_delete.append(item)
-
-    print("---")
-    print(f"Originals on server: {originals_storage[0:3]}...")
-    print(f"Originals on cloud: {originals_cloud[0:3]}...")
-    print(f"Will be DELETED: {queries_to_delete[0:3]}...")
-    print(f"Originals on server: {len(originals_storage)}. On cloud: {len(originals_cloud)}. To delete: {len(queries_to_delete)}.")
-    print("---")
-    print("Deleting extra originals from cloud")
-    for item in queries_to_delete:
-        y.remove(f"{originals_path}/{item}")
-        time.sleep(1)
+    # originals_storage = [item.pk for item in articles]
+    # originals_cloud = [item.name for item in list(y.listdir(originals_path))]
+    #
+    # queries_to_delete = []
+    # for item in originals_cloud:
+    #     if int(item.rstrip(".docx")) not in originals_storage:
+    #         queries_to_delete.append(item)
+    #
+    # print("---")
+    # print(f"Originals on server: {originals_storage[0:3]}...")
+    # print(f"Originals on cloud: {originals_cloud[0:3]}...")
+    # print(f"Will be DELETED: {queries_to_delete[0:3]}...")
+    # print(f"Originals on server: {len(originals_storage)}. On cloud: {len(originals_cloud)}. To delete: {len(queries_to_delete)}.")
+    # print("---")
+    # print("Deleting extra originals from cloud")
+    # for item in queries_to_delete:
+    #     y.remove(f"{originals_path}/{item}")
+    #     time.sleep(1)
 
     print("Recreate outdated Docs")
     size = len(articles)
     fails = []
     missing_original = []
+    missing_data = []
     no_need_update = []
     success = []
     for i, item in enumerate(articles):
@@ -402,6 +407,7 @@ def clear_garbage(base_path, originals_path, doc_type, exclude_filter=None):
 
         time.sleep(1)
         res = compose_document_if_not_exists(item.id, doc_type, cloud=y)
+        print(res)
 
         if res == 200:
             success.append(item.title)
@@ -409,8 +415,8 @@ def clear_garbage(base_path, originals_path, doc_type, exclude_filter=None):
             missing_original.append(item.title)
         elif res == 208:
             no_need_update.append(item.title)
-        elif res in (424, 409, 400):
-            fails.append(item.title)
+        elif res == 424:
+            missing_data.append(item.title)
         else:
             fails.append(item.title)
 
@@ -418,6 +424,7 @@ def clear_garbage(base_path, originals_path, doc_type, exclude_filter=None):
     print(f"Updated: {len(success)}")
     print(f"No need update: {len(no_need_update)}")
     print(f"Missing original: {len(missing_original)}")
+    print(f"Missing data: {len(missing_data)}")
     print(f"Compose failed count: {len(fails)}")
     print("---")
     for item in missing_original:

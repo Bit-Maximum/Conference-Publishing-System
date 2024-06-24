@@ -11,6 +11,10 @@ class RecipientsType(enum.IntEnum):
     All = 0
     NoArticle = 1
     EmailVerification = 2
+    NoThesis = 3
+    NoSources = 4
+    Winners = 5
+    HasArticle = 6
 
 
 # mail_template_choices = (

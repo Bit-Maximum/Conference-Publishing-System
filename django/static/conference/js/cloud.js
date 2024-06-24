@@ -27,6 +27,7 @@ function download_document(node_id, need_check=false) {
         .then(response => {
             if (!response.ok) {
                 return response.json().then(data => {
+                    console.log(data.errors);
                     compose_modal_errors(data.errors, "errors_container", "errors_wrapper");
                     document.getElementById("modal_errors_toggle").click();
                 });

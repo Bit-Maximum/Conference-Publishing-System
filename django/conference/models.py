@@ -1,5 +1,5 @@
 import os
-import magic
+import puremagic
 
 from modelcluster.fields import ParentalKey
 
@@ -31,14 +31,14 @@ ext_consent_file_validator = FileExtensionValidator(["pdf"], _(
 
 def validate_article_files_maintype(file):
     accept = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
-    file_mime_type = magic.from_buffer(file.read(2048), mime=True)
+    file_mime_type = puremagic.from_stream(file, mime=True)
     if file_mime_type not in accept:
         raise ValidationError("Неподдерживаемый формат файла")
 
 
 def validate_consent_file_maintype(file):
     accept = ["application/pdf"]
-    file_mime_type = magic.from_buffer(file.read(2048), mime=True)
+    file_mime_type = puremagic.from_stream(file, mime=True)
     if file_mime_type not in accept:
         raise ValidationError("Неподдерживаемый формат файла")
 

@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -7,7 +8,7 @@ import re
 import importlib
 
 from docx import Document
-
+# from publisher.settings import YADISK_TOKEN, YADISK_BASE_PATH, YADISK_MAILINGS_SEND_PROGRAM_PATH, YADISK_ORIGINALS_THESIS_PATH, YADISK_ORIGINALS_ARTICLE_PATH, YADISK_THESIS_PATH, TEMP_IMG_DIR, TEMP_FILE_DIR, YADISK_ARTICLE_PATH, TEMP_FILE_DIR
 
 
 
@@ -137,4 +138,3 @@ if __name__ == "__main__":
         "Православная теология в контексте современной гуманитаристики",
         "Теология и религиоведение: опыт осмысления религиозных культур и субкультур"
     ]
-
