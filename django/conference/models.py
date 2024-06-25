@@ -15,7 +15,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 from .managers import CustomUserManager
-from .config.conference_config import EDUCATION_LEVELS, DEFAULT_LEVEL
+from .config.conference_config import *
 
 # Validators
 ext_article_files_validator = FileExtensionValidator(["docx"], _(
