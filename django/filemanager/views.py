@@ -9,7 +9,6 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, Http404, JsonResponse
 
-# from conference.config.conference_config import MODERATORS, ALLOW_NO_SOURCE
 from conference.models import ArticleInfo, CustomUser, Section, AuthorInfo, Source
 from cms.models import ControlsPage, SectionModerator
 from publisher.settings import YADISK_TOKEN, YADISK_BASE_PATH, YADISK_ORIGINALS_THESIS_PATH, YADISK_ORIGINALS_ARTICLE_PATH, YADISK_THESIS_PATH, TEMP_IMG_DIR, TEMP_FILE_DIR, YADISK_ARTICLE_PATH

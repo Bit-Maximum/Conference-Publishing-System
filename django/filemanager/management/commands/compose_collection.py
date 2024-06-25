@@ -7,7 +7,7 @@ import yadisk
 from django.core.management.base import BaseCommand
 
 from conference.models import ArticleInfo, ArticleText, ArticleThesis, Section
-# from conference.config.conference_config import COLLECTION_IMPRINT
+
 from cms.models import ControlsPage
 from publisher.settings import YADISK_TOKEN, YADISK_BASE_PATH, TEMP_FILE_DIR, YADISK_ARTICLE_PATH, TEMP_IMG_DIR, TEMP_FILE_DIR
 

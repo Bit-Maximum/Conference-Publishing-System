@@ -26,8 +26,7 @@ from .forms import FilterArticleForm, ArticleTextForm, ArticleThesisForm, Consen
 from mailings.views import send_mail_attachments
 from filemanager.views import upload_file, up_to_date
 from publisher.settings import YADISK_ORIGINALS_THESIS_PATH, YADISK_ORIGINALS_ARTICLE_PATH, EMAIL_HOST_USER, MEDIA_ROOT, CLOUD_BASE_URL, MEDIA_ROOT, DEFAULT_FROM_EMAIL
-from .config.conference_config import EDUCATION_LEVELS, DEFAULT_LEVEL
-# from .config.conference_config import *
+from .config.conference_config import EDUCATION_LEVELS
 
 
 def select_outdated(date, updated):
