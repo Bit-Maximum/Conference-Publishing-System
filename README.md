@@ -120,6 +120,12 @@ docker-compose exec db pg_restore \
 
 ## Gallery
 
+https://github.com/user-attachments/assets/ab52a354-54f0-42cc-b3c2-352257d2429a
+
+https://github.com/user-attachments/assets/b277eb29-983e-4288-bf33-bf667247448e
+
+https://github.com/user-attachments/assets/2cb3ef58-aea9-4131-84f9-eb25409068c0
+
 ---
 
 ## 📄 Autoformatting in Action
