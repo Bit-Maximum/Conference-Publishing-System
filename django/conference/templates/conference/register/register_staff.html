@@ -1,0 +1,63 @@
+{% extends "conference/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="wrapper form_wrapper">
+
+            <h2 class="margin_bottom">Заявка на регистрацию сотрудника</h2>
+            <h4>После заполнения данной формы, будет сформирован запрос к администратору конференции для регистрации вас как сотрудника.</h4>
+            <h5>Вам нужно будет подождать пока администратор подтвердит ваш аккаунт.</h5>
+            {% if message %}
+                <div class="error red">{{ message }}</div>
+            {% endif %}
+
+            <form action="{% url 'staff' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <input autofocus required class="form-control" type="email" name="email" placeholder="e-mail">
+                </div>
+                <div class="form-group mb-3">
+                    <input required class="form-control" type="text" name="first_name" placeholder="имя">
+                </div>
+                <div class="form-group mb-3">
+                    <input required class="form-control" type="text" name="last_name" placeholder="фамилия">
+                </div>
+                <div class="form-group mb-3">
+                    <input class="form-control" type="text" name="middle_name" id="middle_name" placeholder="отчество">
+                    <label for="middle_name" class="form-label">*если есть</label>
+                </div>
+                <div class="form-group mb-3" id="sections_form_wrapper">
+                </div>
+                <div class="form-group mb-3">
+                    <input required class="form-control" type="password" name="password" placeholder="пароль">
+                </div>
+                <div class="form-group mb-3">
+                    <input required class="form-control" type="password" name="confirmation" placeholder="подтверждение пароля">
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" name="is_reviewer" id="is_reviewer">
+                    <label class="form-check-label" for="is_reviewer">Зарегистрироваться как рецензент</label>
+                </div>
+                <input class="btn btn-primary margin_top" type="submit" value="Зарегистрироваться" id="submit_btn">
+                <div class="spinner-border m-3" role="status" id="loading" hidden>
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </form>
+
+            Уже зарегистрированы? <a href="{% url 'login' %}">Войти в аккаунт.</a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.getElementById('submit_btn').addEventListener('click', () => {
+        start_loading('submit_btn');
+        delay(2000).then(() => end_loading('submit_btn'));
+    });
+</script>
+<script src="../../../static/conference/js/register_staff.js"></script>
+{% endblock %}

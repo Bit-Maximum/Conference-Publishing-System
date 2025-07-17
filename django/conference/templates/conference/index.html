@@ -1,0 +1,151 @@
+{% extends "conference/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container-xxl">
+    <div class="row justify-content-center">
+        <div class="row justify-content-around">
+            <div class="col-1 col-sm-2"></div>
+            <div class="col-4 col-sm-2">
+                <img class="img-thumbnail h-100 object-fit-contain no_border" src="../../static/conference/img/fefu_logo.png" alt="Логотип ДВФУ">
+            </div>
+            <div class="col-4 col-sm-2">
+                <img class="img-thumbnail h-100 object-fit-contain no_border" src="../../static/conference/img/sah_logo.png" alt="Логотип ШИГН ДВФУ">
+            </div>
+            <div class="col-1 col-sm-2"></div>
+        </div>
+    </div>
+    <br>
+    <div class="row justify-content-center text-center">
+        <p class="large uppercase mb-1">МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ</p>
+        <p>Федеральное государственное автономное образовательное учреждение высшего образования</p>
+        <h4>«Дальневосточный федеральный университет»</h4>
+        <h4>Школа искусств и гуманитарных наук</h4>
+    </div>
+    <br>
+    <br>
+    <div class="row justify-content-center text-center">
+        <p class="large">Уважаемые коллеги!</p>
+        <br>
+        <p class="mb-1">Приглашаем Вас принять участие в работе</p>
+        <h5>ХIII научно-практической конференции студентов и аспирантов</h5>
+        <h5 class="uppercase">«HUMANIORA FORUM – 2024»</h5>
+    </div>
+    {% if not request.user.is_authenticated and registration %}
+    <br>
+    <div class="row justify-content-center text-center">
+        <a href="{% url 'register' %}" class="btn btn-primary fit_content">Регистрация</a>
+    </div>
+    {% elif not request.user.is_authenticated %}
+    <br>
+    <div class="row justify-content-center text-center">
+        <div class="btn btn-primary fit_content">Регистрация закрыта</div>
+    </div>
+    <br>
+    {% endif %}
+    {% if program_ready %}
+    <br>
+    <div class="row justify-content-center text-center">
+        <a href="{% static 'conference/docs/Программа конференции.pdf' %}" download="Научная программа конференции"><div class="btn btn-primary fit_content">Скачать программу конференции</div></a>
+    </div>
+    <br>
+    {% endif %}
+    <div class="row justify-content-center text-center mt-2">
+        <a href="{% url 'article_instruction' %}" class="btn btn-primary fit_content">Требования к докладам <i class="fa-solid fa-location-arrow"></i></a>
+    </div>
+    <div class="row justify-content-center">
+        <div class="wrapper form_wrapper mb-4 mt-2r">
+            <div class="form-group mb-3">
+                <strong class="about_label">Дата проведения: <span class="data">26 апреля 2024 года</span></strong>
+            </div>
+            <div class="form-group mb-3">
+                <strong class="about_label">Место проведения: <span class="data">Россия, г. Владивосток, о. Русский, кампус ДВФУ, Школа искусств и гуманитарных наук (корпус F)</span></strong>
+            </div>
+            <div class="form-group mb-3">
+                <strong class="about_label">Рабочий язык: <span class="data">русский</span></strong>
+            </div>
+            <div class="form-group mb-3">
+                <strong class="about_label">Форма участия: <span class="data">очная</span></strong>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="mw-700">
+            <p class="text mb-2">В 2024 году традиционная научно-практическая конференция студентов и
+                аспирантов ШИГН посвящена Году семьи.</p>
+            <p class="text mb-2">Основная цель Конференции – развитие научной активности обучающихся,
+                привлечение их к решению актуальных задач современных гуманитарных и социальных
+                наук.</p>
+            <hr>
+            <p class="text mb-2">Работа Конференции будет проходить по <strong>13 секциям</strong>, отражающим все основные
+                направления современных гуманитарных и социальных наук:</p>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <table class="table table-bordered mw-700 mb-1 mt-3">
+            <tbody>
+            {% for section in sections %}
+
+                {% if not forloop.counter|divisibleby:"2" %}
+                <tr>
+                    <th style="font-weight: 500;">{{ section }}</th>
+                {% else %}
+                    <th style="font-weight: 500;">{{ section }}</th>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <div class="row justify-content-center">
+        <div class="mw-700">
+            <p class="text mb-2">Для участия в Конференции приглашаются студенты (специалисты, бакалавры,
+                магистранты), аспиранты – учащиеся российских и зарубежных вузов.</p>
+            <p class="text mb-2">Желающим принять участие в Конференции необходимо <strong>до 1 апреля 2024 г.
+                (включительно)</strong> направить в организационный комитет заявки и тезисы докладов для
+                отбора к участию. Заявки, тезисы и тексты докладов направляются с помощью системы
+                электронной регистрации на странице конференции – <a href="{% url 'register' %}">регистрация</a>. Заявки и доклады, поступившие по
+                почте или направленные иным способом, не рассматриваются и не регистрируются.</p>
+            <p class="text mb-2">Научная программа Конференции будет сформирована на основании отобранных
+                заявок к 12 апреля 2024 г.</p>
+            <p class="text mb-2">В ходе секционных заседаний определяются три лучших доклада от каждой секции,
+                которые получают рекомендацию к публикации в электронном сборнике материалов
+                Конференции. Выявление лучших докладов Конференции проводится экспертными
+                советами секций Конференции. Экспертные советы секций формируются из ведущих
+                ученых ШИГН, а также приглашенных специалистов по направлению секций.</p>
+            <p class="text mb-2">Оргкомитет оставляет за собой право отклонить материалы, поступившие не в срок,
+                не отвечающие тематике и уровню научного мероприятия, содержащие сведения
+                ограниченного распространения, оформленные не по установленным требованиям.</p>
+            <br>
+            <p class="text-end">С уважением,<br>
+                Оргкомитет Humaniora Forum – 2024</p>
+        </div>
+    </div>
+    <footer>
+        <div class="row justify-content-center">
+            <div class="mw-700">
+                <hr>
+                <div class="row justify-content-between">
+                    <div class="col-12 col-sm-4">
+                        <div class="row justify-content-center">
+                            <a href="https://www.dvfu.ru/" class="fit_content">
+                                <img class="mh-160" src="../../static/conference/img/qr-fefu.svg" alt="QR-code dvfu.ru">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="row justify-content-end text-end">
+                            <h6 class="uppercase">КОНТАКТНАЯ ИНФОРМАЦИЯ</h6>
+                            <small class="about_label">Е-mail: <span class="data">humaniora-shign@yandex.ru</span></small>
+                            <small class="about_label"><span class="data">кампус ДВФУ, корпус F, каб. F701</span></small>
+                            <small class="about_label"><span class="data">пн. – пт., 09:00–18:00</span></small>
+                            <small class="about_label"><span class="data">Белевщук Галина Павловна</span></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}

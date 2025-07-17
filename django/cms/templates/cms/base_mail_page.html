@@ -1,0 +1,19 @@
+{% load static wagtailcore_tags %}
+{% wagtail_site as current_site %}
+
+<h4>
+    {% block headings_block %}
+    Тема письма - {{ self.subject_suffix }}
+    {% endblock %}
+</h4>
+
+{% block content_block %}
+<p>[ Здесь будет расположено содержание письма</p>
+
+<p style="font-style:italic">Визуальный стиль письма может отличаться в зависимости от почтового клиента, который использует адресат. ]</p>
+{% endblock %}
+
+{% block footer_block %}
+<br>
+<p>{% if self.base_footer %}{{ self.base_footer }}{% else %}С уважением, оргкомитет «{{ current_site }}».{% endif %}</p>
+{% endblock %}

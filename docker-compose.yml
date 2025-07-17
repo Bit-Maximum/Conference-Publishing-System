@@ -1,0 +1,98 @@
+
+services:
+
+  db:
+    image: postgres:17
+    container_name: postgres_forum
+    restart: always
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./django/config/demo/database:/tmp
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+
+  redis:
+    image: redis:7.0.11-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+  django:
+    container_name: django
+    build:
+      context: ./django
+    command: gunicorn --bind 0.0.0.0:8000 --workers 3 publisher.wsgi:application
+    volumes:
+      - ./django:/app
+      - .env:/app/.env
+      - static_volume:/app/static/
+      - media_volume:/app/media/
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  celery:
+    container_name: celery
+    build:
+      context: ./django
+    user: django-user
+    command: celery -A publisher worker -l INFO
+    volumes:
+      - ./django:/app
+      - .env:/app/.env
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - django
+      - db
+    restart: unless-stopped
+
+  celerybeat:
+    container_name: celerybeat
+    build:
+      context: ./django
+    user: django-user
+    command: celery -A publisher beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - ./django:/app
+      - .env:/app/.env
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - django
+      - celery
+      - db
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.29.0-alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./django/config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/static/
+      - media_volume:/app/media/
+    depends_on:
+      - django
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

@@ -1,0 +1,148 @@
+{% extends "conference/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container-xxl">
+    <div class="row justify-content-center">
+        <div class="row justify-content-center text-center mt-3">
+            <h4>Требования к тексту доклада</h4>
+        </div>
+        <div class="row justify-content-center text-center mt-3">
+            <div class="mw-700">
+                <p class="large">Итоговый документ составляется с помощью автоматизированной системы верстки научных статей. Отправка тезисов докладов проходит в 2 этапа:</p>
+            </div>
+        </div>
+        <div class="row justify-content-center text-center mt-3">
+            <div class="dropdown">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Навигация по странице
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#template">Шаблон доклада</a></li>
+                    <li><a class="dropdown-item" href="#first">Обязательные поля</a></li>
+                    <li><a class="dropdown-item" href="#second">Требования к содержанию</a></li>
+                    <li><a class="dropdown-item" href="#third">Требования к оформлению</a></li>
+                    <li><a class="dropdown-item" href="#forth">Примеры</a></li>
+                </ul>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3">
+            <h5>Шаг 1</h5>
+        </div>
+        <div class="row justify-content-center mt-1" id="second">
+            <div class="mw-700">
+                <p class="text mb-2">Отправляемый документ должен содержать <strong>только основной текст</strong> статьи. Информация об авторах, научном руководителе, список литературы и данные о докладе добавляются автоматически.</p>
+                <p class="text mb-2">Для удобства вы можете скачать <a href="{% static 'conference/docs/document_template.docx' %}" download="Шаблон текста доклада" id="template">универсальный шаблон доклада</a>. Принимаются файлы только в формате «.docx».</p>
+                <p class="text mb-2">Структура доклада должна включать в себя следующие пункты:</p>
+                <ol class="list-group list-group-numbered">
+                    <li class="list-group-item">Введение (вступительная часть, в которой идет речь о целях исследования и дается постановка проблемы, кратко анализируются причины выбора темы, формулируется гипотеза).</li>
+                    <li class="list-group-item">Методы (описываются процедура/протокол исследования, методы, исследования, аргументируются причины их выбора).</li>
+                    <li class="list-group-item">Результаты (подробно излагается информация о том, что было выявлено в ходе исследования. Все таблицы, графики, примеры, изображения и т.п. должны быть представлены в этом разделе).</li>
+                    <li class="list-group-item">Анализ (полученные данные и результаты комментируются относительно гипотезы, указанной во введении).</li>
+                    <li class="list-group-item">Обсуждение (полученные данные и результаты рассматриваются в контексте других опубликованных научных работ; указывается на значимость проведенного исследования для конкретной научной области, практики, а также на перспективы для будущих исследований).</li>
+                </ol>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>Выше приведено смысловое содержание, а не конкретные названия разделов.</p>
+                </div>
+                <hr>
+                <p class="text mb-2">Требования к оформлению текста доклада:</p>
+                <ol class="list-group list-group-numbered" id="third">
+                    <li class="list-group-item">Документ должен быть выполнен в формате MS Word (принимаются файлы только с расширением .docx).</li>
+                    <li class="list-group-item">Формат А4, шрифт Times New Roman, кегль 12, межстрочный интервал 1,15.</li>
+                    <li class="list-group-item">Поля: верхнее и нижнее – 20 мм, левое и правое – 25.</li>
+                    <li class="list-group-item">Объем основного текста доклада – от 10 до 14 тыс. знаков с пробелами.</li>
+                    <li class="list-group-item">В тексте доклада следует избегать ручных переносов (manual hyphenation).</li>
+                    <li class="list-group-item">После заголовков точки отсутствуют.</li>
+                    <li class="list-group-item">Недопустимо наличие «висячих» предлогов в названии, таблиц, рисунков и т.п.</li>
+                    <li class="list-group-item">Формулы должны быть выполнены во встроенном редакторе MS Equation Editor.</li>
+                    <li class="list-group-item">Для формирования ссылки номер «источника» указывается в квадратных скобках. Например: [10]. Если требуется указать номер страницы «источника», то, кроме номера «источника», внутри скобок ставится номер страницы. Например: [10, с. 25]. Ссылки на «источники» выполненные в виде подстрочной сноски учитываться не будут.</li>
+                    <li class="list-group-item">В тексте доклада должны быть ссылки на все «источники», содержащиеся в списке литературы.</li>
+                    <li class="list-group-item">Рисунки (диаграммы, карты, графики, схемы, фотографии и т.п.) и таблицы используются только в том случае, если они необходимы для понимания материала, изложенного в тексте.</li>
+                    <li class="list-group-item">В тексте доклада должны быть ссылки на все рисунки и таблицы, содержащиеся в нем. Два и более рисунка (таблицы) последовательно нумеруются. Ссылка на рисунок и таблицу дается в круглых скобках. Например: (рис. 1), (табл. 1). Единственный в докладе рисунок (таблица) должен иметь только заголовок и не обозначаться как (рис. 1) или (табл. 1).</li>
+                    <li class="list-group-item">Название рисунков, таблиц, диаграмм и т. п. указывается под изображением или таблицей, без кавычек (Times New Roman, 12 пт).</li>
+                    <li class="list-group-item">
+                        <ul class="list-group list-group-flush">Рисунки и таблицы должны:
+                            <li class="list-group-item">иметь четкое, контрастное изображение;</li>
+                            <li class="list-group-item">быть выдержаны в черно-белой гамме (возможно применение черной штриховки);</li>
+                            <li class="list-group-item">иметь рамку (сплошная одинарная линия, черного цвета, толщина – 0,5 пт).</li>
+                        </ul>
+                    </li>
+                    <li class="list-group-item">Рисунки располагаются по тексту доклада (без обтекания текстом). Формат файла JPG, минимальный размер изображения 1200х1600 пикселей; разрешение не менее 300 точек/дюйм.</li>
+                    <li class="list-group-item">Диаграммы, графики и т.п. должны быть выполнены в виде изображений. На них распространяются требования к рисункам.</li>
+                    <li class="list-group-item">Таблицы должны быть набраны в Word. Шапки таблиц не тонируются, не печатаются жирным шрифтом. Отдельные ячейки таблиц можно выделять заливкой только в том случае, если тон несет смысловую нагрузку.</li>
+                    <li class="list-group-item">Используемые в таблицах (диаграммах и т.д.) линии должны иметь толщину не менее 0,5 пт.</li>
+                    <li class="list-group-item">Слово «таблица» набирается курсивом с выравниванием по правому краю, шрифтом 12, ниже – заглавие таблицы. Размер текста в таблицах 10.</li>
+                    <li class="list-group-item">Текст внутри таблицы и рисунка – Times New Roman, 10 пт.</li>
+                    <li class="list-group-item">Доклады должны быть написаны грамотно, без орфографических, пунктуационных и стилистических ошибок.</li>
+                </ol>
+                <br>
+                <p class="text mb-2">Оргкомитет конференции оставляет за собой право отклонить материалы, не отвечающие тематике и уровню научного мероприятия, содержащие сведения ограниченного распространения, превышающие установленный объем, оформленные с нарушением установленных требований.</p>
+                <hr>
+                <div class="image_wrapper mt-3 mb-2" id="forth">
+                    <img src="{% static 'conference/img/thesis_instruction/3.png' %}" class="img-fluid img-thumbnail" alt="Пример оформления формул">
+                    <div class="text-end img_subscription">Пример оформления формул</div>
+                </div>
+                <hr>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/thesis_instruction/4.png' %}" class="img-fluid img-thumbnail" alt="Пример ссылок на источники">
+                    <div class="text-end img_subscription">Пример ссылок на источники</div>
+                </div>
+                <br>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/thesis_instruction/1.png' %}" class="img-fluid img-thumbnail" alt="Соответствующий список литературы на странице доклада">
+                    <div class="text-end img_subscription">Соответствующий список литературы на странице доклада</div>
+                </div>
+                <hr>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/thesis_instruction/5.png' %}" class="img-fluid img-thumbnail" alt="Пример оформления рисунков">
+                    <div class="text-end img_subscription">Пример оформления рисунков</div>
+                </div>
+                <br>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/thesis_instruction/6.png' %}" class="img-fluid img-thumbnail" alt="Пример оформления таблиц">
+                    <div class="text-end img_subscription">Пример оформления таблиц</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center text-center mt-3">
+            <h5>Шаг 2</h5>
+        </div>
+        <div class="row justify-content-center mt-1" id="first">
+            <div class="mw-700">
+                <p class="text mb-2">Также удостоверьтесь в том, что на сайте конференции указана вся необходимая информация о докладе и его авторов. Список обязательных для указания полей представлен ниже:</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Тема доклада</li>
+                    <li class="list-group-item">Аннотация</li>
+                    <li class="list-group-item">Ключевые слова</li>
+                    <li class="list-group-item">ФИО научного руководителя</li>
+                    <li class="list-group-item">Его ученая степень и ученое звание</li>
+                    <li class="list-group-item">Его должность и место работы</li>
+                    <li class="list-group-item">Список используемых источников</li>
+                    <li class="list-group-item">ФИО автора*</li>
+                    <li class="list-group-item">Место учебы*</li>
+                    <li class="list-group-item">Город*</li>
+                </ul>
+                <div class="img_subscription">* Для всех авторов работавших над докладом.</div>
+                <hr>
+                <p class="text mb-2">Все позиции в списке литературы указываются на странице вашего доклада. Попасть на неё можно через ваш <a href="{% url 'profile' %}" target="_blank">личный кабинет</a> или на <a href="{% url 'library' %}" target="_blank">странице поиска</a> зарегистрированных работ.</p>
+                <div class="image_wrapper mt-3 mb-3">
+                    <img src="{% static 'conference/img/thesis_instruction/1.png' %}" class="img-fluid img-thumbnail" alt="Пример заполненного списка литературы">
+                    <div class="text-end img_subscription">Пример заполненного списка литературы</div>
+                </div>
+                <p class="text mb-2">Для того чтобы указать новый источник, нажмите на кнопку «указать источник» и введите библиографическое описание. Текст ссылки должен быть подготовлен в соответствии с требованиями <a href="https://www.dvfu.ru/upload/medialibrary/ff5/gost-p-7-0-100-2018.pdf" target="_blank">ГОСТ Р 7.0.100-2018. «Библиографическая запись. Библиографическое описание»</a>.</p>
+                <div class="image_wrapper mt-3 mb-3">
+                    <img src="{% static 'conference/img/thesis_instruction/2.png' %}" class="img-fluid img-thumbnail" alt="Пример заполненного списка литературы">
+                    <div class="text-end img_subscription">Пример заполненного списка литературы</div>
+                </div>
+                <p class="text mb-2">Чтобы изменить или удалить указанный источник нажмите на кнопку «изменить» или «удалить» соответственно.</p>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>Обратите внимание, что порядок источников в итоговом документе будет совпадать с тем, как выглядит список литературы на странице доклада. Он автоматически сортируется по алфавиту.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

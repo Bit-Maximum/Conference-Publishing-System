@@ -1,0 +1,106 @@
+{% extends "conference/profile/profile.html" %}
+{% load static %}
+{% block header %}Профиль сотрудника{% endblock %}
+
+    {% block secondary_info %}
+            <div class="blank" id="edit_section_info_wrapper" hidden>
+                <h4 class="margin_bottom">Смена секции</h4>
+                <form id="edit_section_info_form" action="">
+                    <div class="form-group">
+                        <select class="form-control" name="section" id="edit_section">
+                            <option selected disabled value="None">Выберете секцию</option>
+                            {% for item in sections %}
+                            <option value="{{ item.id }}">{{ item.content }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-primary margin_right" id="submit_section_info_btn">Сохранить</button>
+                        <button type="button" class="btn btn-secondary" id="cansel_section_info_btn">Отмена</button>
+                    </div>
+                </form>
+            </div>
+            <div class="blank" id="section_info">
+                <h4 class="margin_bottom">Ваша секция</h4>
+                <div class="about_label">Секция: <div class="data" id="section">{{ section.content }}</div></div>
+                <button type="button" class="btn btn-primary margin_top" id="edit_section_info_btn">Сменить секцию</button>
+            </div><!-- Section Info -->
+    {% endblock %}
+
+{% block redirect_buttons %}
+    <div class="action margin_top">
+        <a href="{%url 'library' %}"  class="btn btn-primary" id="add_article_btn">Продвинутый поиск докладов</a>
+        <div class="data ms-2"><a href="{% url 'staff_instruction' %}">Инструкция для сотрудников</a>.</div>
+    </div> <!-- Go to Library Button -->
+{% endblock %}
+
+{% block items_header %}Доклады вашей секции:{% endblock %}
+
+{% block articles %}
+    <form class="row gy-2 gx-3 align-items-center mb-3" id="article_filters" onsubmit="return false;">
+        <div class="data">Фильтры отображаемых докладов</div>
+        <div class="col-auto d-inline-flex">
+            <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" role="switch" name="filter_all" id="filter_all" checked>
+                <label class="form-check-label" for="filter_all">Все доклады</label>
+            </div>
+        </div>
+        <div class="col-auto d-inline-flex">
+            <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" role="switch" name="filter_winners" id="filter_winners">
+                <label class="form-check-label" for="filter_winners">Только победители</label>
+            </div>
+        </div>
+        <div class="col-auto d-inline-flex">
+            <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" role="switch" name="filter_unapproved" id="filter_unapproved">
+                <label class="form-check-label" for="filter_unapproved">Только непроверенные</label>
+            </div>
+        </div>
+        <div class="col-auto d-inline-flex align-items-center">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="filter_edited" id="filter_edited">
+                <label class="form-check-label" for="filter_edited">Только изменённые</label>
+            </div>
+            <button type="button" class="btn"
+                    data-bs-toggle="popover" data-bs-placement="top"
+                    data-bs-title="Только изменённые"
+                    data-bs-content="Отобразятся уже проверенные доклады, но в которые с того момента были внесены изменения."
+                    data-bs-animation=true>
+                <i class="fa-regular fa-circle-question"></i>
+            </button>
+        </div>
+        <div class="col-auto d-inline-flex align-items-center">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="filter_rejected" id="filter_rejected">
+                <label class="form-check-label" for="filter_edited">Только отклонённые</label>
+            </div>
+            <button type="button" class="btn"
+                    data-bs-toggle="popover" data-bs-placement="top"
+                    data-bs-title="Только отклонённые"
+                    data-bs-content="Отобразятся доклады, которые были отклонены редакторской коллегией."
+                    data-bs-animation=true>
+                <i class="fa-regular fa-circle-question"></i>
+            </button>
+        </div>
+        <div class="col-auto">
+            <input type="button" value="Отфильтровать" class="btn btn-primary" id="filter_btn">
+            <div class="spinner-border m-3" role="status" id="loading" hidden>
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </form>
+
+    <div id="articles_container">
+        <div id="items_wrapper">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block comments_header %}<h4>Ваши комментарии к докладам:</h4>{% endblock %}
+
+{% block custom_script %}
+<script src="{% static 'conference/js/staff.js' %}"></script>
+<script src="{% static 'conference/js/enable_popovers.js' %}"></script>
+{% endblock %}

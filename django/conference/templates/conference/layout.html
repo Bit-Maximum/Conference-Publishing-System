@@ -1,0 +1,177 @@
+{% load static wagtailcore_tags wagtailuserbar base_tags %}
+{% wagtail_site as current_site %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        {% block title %}
+        {% if page.title %}
+                {% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}
+                {% if current_site and current_site.site_name %}- {{ current_site.site_name }}{% endif %}
+        {% else %}
+            {{ current_site.site_name }}
+        {% endif %}
+        {% endblock %}
+    </title>
+    {% if page.search_description %}
+    <meta name="description" content="{{ page.search_description }}">
+    {% else %}
+    <meta name="description" content="Приглашаем Вас принять участие в работе ХIII научно-практической конференции студентов и аспирантов «HUMANIORA FORUM – 2024»">
+    {% endif %}
+
+    {# Force all links in the live preview panel to be opened in a new tab #}
+    {% if request.in_preview_panel %}
+    <base target="_blank">
+    {% endif %}
+
+    <link href="{% static 'conference/img/site-logo.svg' %}" rel="apple-touch-icon" sizes="180x180">
+    <link href="{% static 'conference/img/site-logo.svg' %}" rel="icon" sizes="32x32">
+
+    <link href="{% static 'conference/css/reset.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="{% static 'conference/css/styles.css' %}" rel="stylesheet">
+    {% block links %}{% endblock %}
+</head>
+<body>
+<div class="container-fluid no_paddings">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light ml-auto justify-content-center">
+            <div class="container-xxl container_margins">
+                <a class="navbar-brand navbar_brand" href="/">{{ current_site.site_name }}</a>
+                <button class="navbar-toggler to_left" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-1 mb-2 mb-lg-0">
+                        {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}"><strong id="user_full_name">{{ request.user.last_name }} {{ request.user.first_name|make_list|first }}.{% if request.user.middle_name %}{{ request.user.middle_name|make_list|first }}.{% endif %}</strong></a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/">Главная</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'library' %}">Все материалы</a>
+                        </li>
+                        {% if request.user.is_authenticated and not request.user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}">Личный кабинет</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Инструкции
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% instruction_menu %}
+                            </ul>
+<!--                            <ul class="dropdown-menu">-->
+<!--                                <li><a class="dropdown-item" href="{% url 'register_instruction' %}">Как зарегистрироваться?</a></li>-->
+<!--                                <li><a class="dropdown-item" href="{% url 'thesis_instruction' %}">Требования к тезисам доклада</a></li>-->
+<!--                                <li><a class="dropdown-item" href="{% url 'article_instruction' %}">Требования к тексту доклада</a></li>-->
+<!--                                <li><a class="dropdown-item" href="{% url 'upload_thesis_instruction' %}">Как загрузить тезисы доклада?</a></li>-->
+<!--                                {% if request.user.is_staff %}-->
+<!--                                <li><hr class="dropdown-divider"></li>-->
+<!--                                <li><a class="dropdown-item" href="{% url 'staff_instruction' %}">Инструкция для сотрудников</a></li>-->
+<!--                                {% endif %}-->
+<!--                            </ul>-->
+                        </li>
+
+                    </ul>
+                    <ul class="navbar-nav mb-2 mb-lg-0 me-0">
+                        {% if request.user.is_authenticated %}
+                            {% if request.user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'staff' %}">Регистрация сотрудника</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin">Панель администратора</a>
+                            </li>
+                            {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Вход</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Регистрация</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+    </nav>
+</div>
+<div class="main">
+
+{% block body %}
+{% endblock %}
+
+</div>
+
+<footer>
+
+{% block footer %}
+{% endblock %}
+
+<!--  Conference Publisher System Copyright  -->
+    <div class="row justify-content-center">
+        <div class="mw-700">
+            <hr>
+            <div class="flex flex-wrap">
+                <div class="text-center">
+                    <span class="copyright"><i class="fa-regular fa-copyright"></i> Conference Publishing System </span>
+                    <div class="elementor-icon">
+                        <div class="elementor-icon ms-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M9.98156 0C12.7788 0 15.1603 0.976562 17.1244 2.92875C18.0644 3.86906 18.7791 4.94375 19.2672 6.15188C19.755 7.36031 19.9997 8.64281 19.9997 10C19.9997 11.3691 19.7581 12.6519 19.2766 13.8478C18.7944 15.0441 18.0828 16.1009 17.1428 17.0175C16.1669 17.9816 15.0597 18.72 13.8212 19.2319C12.5834 19.7437 11.3034 19.9997 9.98219 19.9997C8.66094 19.9997 7.39594 19.7472 6.1875 19.2406C4.97937 18.735 3.89594 18.0028 2.9375 17.0447C1.97906 16.0866 1.25 15.0059 0.75 13.8034C0.25 12.6009 0 11.3334 0 10C0 8.67844 0.252813 7.40781 0.75875 6.1875C1.26469 4.96719 2 3.875 2.96406 2.91062C4.86875 0.970625 7.20781 0 9.98156 0ZM10.0178 1.80375C7.73219 1.80375 5.80938 2.60156 4.24969 4.19656C3.46375 4.99437 2.85969 5.89 2.43719 6.88406C2.01406 7.87812 1.80313 8.91687 1.80313 10.0003C1.80313 11.0719 2.01406 12.1047 2.43719 13.0981C2.86 14.0928 3.46375 14.9797 4.24969 15.7594C5.03531 16.5394 5.92188 17.1341 6.91062 17.5453C7.89844 17.9559 8.93437 18.1613 10.0178 18.1613C11.0891 18.1613 12.1272 17.9534 13.1344 17.5366C14.1403 17.1194 15.0472 16.5187 15.8572 15.7331C17.4166 14.2094 18.1959 12.2987 18.1959 10.0006C18.1959 8.89344 17.9934 7.84594 17.5888 6.85781C17.1847 5.86969 16.595 4.98906 15.8219 4.21469C14.2138 2.6075 12.2797 1.80375 10.0178 1.80375ZM9.8925 8.33969L8.55281 9.03625C8.40969 8.73906 8.23438 8.53031 8.02625 8.41125C7.81781 8.2925 7.62437 8.23281 7.44563 8.23281C6.55312 8.23281 6.10625 8.82187 6.10625 10.0006C6.10625 10.5363 6.21938 10.9644 6.44531 11.2859C6.67156 11.6075 7.005 11.7684 7.44563 11.7684C8.02906 11.7684 8.43969 11.4825 8.67813 10.9113L9.91 11.5363C9.64813 12.0247 9.285 12.4084 8.82063 12.6881C8.35688 12.9681 7.84469 13.1078 7.285 13.1078C6.39219 13.1078 5.67156 12.8344 5.12406 12.2863C4.57656 11.7388 4.30281 10.9769 4.30281 10.0009C4.30281 9.04844 4.57969 8.29281 5.13313 7.73313C5.68656 7.17375 6.38594 6.89375 7.23156 6.89375C8.47 6.89313 9.35656 7.37531 9.8925 8.33969ZM15.6603 8.33969L14.3387 9.03625C14.1959 8.73906 14.02 8.53031 13.8119 8.41125C13.6031 8.2925 13.4034 8.23281 13.2137 8.23281C12.3209 8.23281 11.8741 8.82187 11.8741 10.0006C11.8741 10.5363 11.9875 10.9644 12.2134 11.2859C12.4394 11.6075 12.7725 11.7684 13.2137 11.7684C13.7966 11.7684 14.2075 11.4825 14.4453 10.9113L15.6953 11.5363C15.4219 12.0247 15.0525 12.4084 14.5887 12.6881C14.1244 12.9681 13.6184 13.1078 13.0709 13.1078C12.1659 13.1078 11.4431 12.8344 10.9019 12.2863C10.3594 11.7388 10.0887 10.9769 10.0887 10.0009C10.0887 9.04844 10.3653 8.29281 10.9194 7.73313C11.4725 7.17375 12.1719 6.89375 13.0172 6.89375C14.2553 6.89313 15.1369 7.37531 15.6603 8.33969Z" fill="#9A9C9F">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="elementor-icon me-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+                                <path d="M10.7947 0C13.6034 0 15.9728 0.964063 17.9016 2.89281C19.8416 4.83344 20.8125 7.2025 20.8125 10C20.8125 12.8097 19.8597 15.1488 17.9547 17.0175C15.9309 19.0059 13.5444 20 10.7947 20C8.09188 20 5.74687 19.0175 3.75906 17.0531C1.795 15.0887 0.8125 12.7381 0.8125 10C0.8125 7.26219 1.795 4.89313 3.75906 2.89312C5.68781 0.964062 8.0325 0 10.7947 0ZM10.8303 1.80375C8.55656 1.80375 6.63406 2.60156 5.0625 4.19656C3.43125 5.86344 2.61594 7.79812 2.61594 10.0003C2.61594 12.2147 3.42531 14.1316 5.04406 15.7497C6.66313 17.3691 8.59156 18.1781 10.8297 18.1781C13.0556 18.1781 14.9966 17.3634 16.6512 15.7319C18.2228 14.22 19.0084 12.3094 19.0084 9.99969C19.0084 7.72594 18.2106 5.79187 16.6159 4.19625C15.0209 2.60125 13.0922 1.80375 10.8303 1.80375ZM13.5091 7.51781V11.6069H12.3666V16.4637H9.25906V11.6072H8.11656V7.51781C8.11656 7.33906 8.17906 7.1875 8.30375 7.0625C8.42906 6.93781 8.58094 6.875 8.75906 6.875H12.8666C13.0331 6.875 13.1822 6.9375 13.3128 7.0625C13.4431 7.1875 13.5091 7.33937 13.5091 7.51781ZM9.41937 4.94656C9.41937 4.00656 9.88344 3.53594 10.8125 3.53594C11.7416 3.53594 12.2053 4.00594 12.2053 4.94656C12.2053 5.875 11.7409 6.33937 10.8125 6.33937C9.88406 6.33937 9.41937 5.875 9.41937 4.94656Z" fill="#9A9C9F">
+                                </path>
+                            </svg>
+                        </div>
+                        <span class="copyright"><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC-BY 4.0</a> |</span>
+                    </div>
+                    <span class="copyright">Made by Maxim «<a href="https://github.com/Bit-Maximum" target="_blank">Bit Maximum</a>» Merkurev</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Toast massage "Technical Works Soon" -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="toast-header">
+            <img src="{% static 'conference/img/site-logo.svg' %}" class="rounded me-2" width="32px" alt="Логотип HUMANIORA FORUM – 2024">
+            <strong class="me-auto toast_header">«HUMANIORA FORUM – 2024»</strong>
+            <small class="toast_sub_header"></small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" id="toast_close"></button>
+        </div>
+        <div class="toast-body">
+            <p>Уважаемые участники конференции!</p>
+            <p>Информируем вас, что с <strong class="work_start"></strong> по <strong class="work_end"></strong> работа сайта будет приостановлена в связи с плановым обновлением программного обеспечения.</p>
+            <p>Приносим извинения за временные неудобства!</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://kit.fontawesome.com/dd2b9eb772.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="{% static 'conference/js/app.js' %}"></script>
+{% block script %}
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+{% extends "conference/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container-xxl">
+    <div class="row justify-content-center">
+        <div class="row justify-content-center text-center mt-3">
+            <h4>Как отправить тезисы доклада?</h4>
+        </div>
+        <div class="row justify-content-center text-center mt-3">
+            <div class="dropdown">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Навигация по странице
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#first">Отправка тезисов</a></li>
+                    <li><a class="dropdown-item" href="#second">Замена раннее загруженного документа</a></li>
+                    <li><a class="dropdown-item" href="#third">Скачивание документов</a></li>
+                </ul>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row justify-content-center text-center mt-3">
+            <h5>Отправка тезисов</h5>
+        </div>
+        <div class="row justify-content-center mt-1" id="first">
+            <div class="mw-700">
+                <p class="text mb-2">Для начала вам нужно зарегистрировать свой доклад на сайте конференции, в случае если вы это ещё не сделали. Зарегистрировать новый доклад можно на <a href="{% url 'third' %}" target="_blank">странице добавления нового доклада</a>.</p>
+                <p class="text mb-2">Также убедитесь, что ваш документ подготовлен в соответствии с <a href="{% url 'thesis_instruction' %}" target="_blank">требованиями к оформлению тезисов</a>.</p>
+                <p class="text mb-2">Чтобы отправить тезисы, войдите в свой профиль на сайте конференции и перейдите на страницу соответствующего доклада. Найти ваши доклады можно в вашем <a href="{% url 'profile' %}" target="_blank">личном кабинете</a> или на странице <a href="{% url 'library' %}" target="_blank">поиска зарегистрированных докладов</a>.</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/1.png' %}" class="img-fluid img-thumbnail" alt="Личный кабинет">
+                    <div class="text-end img_subscription">Личный кабинет</div>
+                </div>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/2.png' %}" class="img-fluid img-thumbnail" alt="Пример страницы доклада">
+                    <div class="text-end img_subscription">Пример страницы доклада</div>
+                </div>
+                <p class="text mb-2">В разделе «Тезисы» нажмите на кнопку «Загрузить тезисы доклада».</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/3.png' %}" class="img-fluid img-thumbnail" alt="Раздел «Тезисы»">
+                    <div class="text-end img_subscription">Раздел «Тезисы»</div>
+                </div>
+                <p class="text mb-2">В появившейся форме выберете документ, которые вы хотите отправить, и нажмите на кнопку «Сохранить».</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/4.png' %}" class="img-fluid img-thumbnail" alt="Форма отправки тезисов">
+                    <div class="text-end img_subscription">Форма отправки тезисов</div>
+                </div>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/5.png' %}" class="img-fluid img-thumbnail" alt="Пример «окна» выбора файла">
+                    <div class="text-end img_subscription">Пример «окна» выбора файла</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center text-center mt-3">
+            <h5>Замена раннее загруженного документа</h5>
+        </div>
+        <div class="row justify-content-center mt-1" id="second">
+            <div class="mw-700">
+                <p class="text mb-2">Чтобы заменить ранее загруженный документ, войдите в свой профиль на сайте конференции и перейдите на страницу соответствующего доклада. Затем в разделе «Тезисы» нажмите на кнопку «Заменить файл».</p>
+                <div class="image_wrapper mt-3 mb-3">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/6.png' %}" class="img-fluid img-thumbnail" alt="Раздел «Тезисы» с уже загруженным документом">
+                    <div class="text-end img_subscription">Раздел «Тезисы» с уже загруженным документом</div>
+                </div>
+                <p class="text mb-2">В появившейся форме выберете документ, которым вы хотите заменить текущий, и нажмите на кнопку «Сохранить».</p>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/4.png' %}" class="img-fluid img-thumbnail" alt="Форма отправки тезисов">
+                    <div class="text-end img_subscription">Форма отправки тезисов</div>
+                </div>
+                <div class="image_wrapper mt-3 mb-2">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/5.png' %}" class="img-fluid img-thumbnail" alt="Пример «окна» выбора файла">
+                    <div class="text-end img_subscription">Пример «окна» выбора файла</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center text-center mt-3">
+            <h5>Скачивание документов</h5>
+        </div>
+        <div class="row justify-content-center mt-1" id="third">
+            <div class="mw-700">
+                <p class="text mb-2">Итоговый документ составляется с помощью автоматизированной системы верстки научных статей.</p>
+                <p class="text mb-2">Чтобы скачать сформированный документ, перейдите на страницу соответствующего доклада. Затем в разделе «Тезисы» нажмите на кнопку «Скачать тезисы доклада».</p>
+                <div class="image_wrapper mt-3 mb-3">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/6.png' %}" class="img-fluid img-thumbnail" alt="Раздел «Тезисы» с уже загруженным документом">
+                    <div class="text-end img_subscription">Раздел «Тезисы» с уже загруженным документом</div>
+                </div>
+                <p class="text mb-2">Документ начнёт формироваться. Это может занять несколько секунд. По окончанию формирования документа перед вами откроется «окно» для скачивания документа. В ней вам нужно нажать на кнопку «сохранить».</p>
+                <div class="image_wrapper mt-3 mb-3">
+                    <img src="{% static 'conference/img/upload_thesis_instruction/7.png' %}" class="img-fluid img-thumbnail" alt="Пример «окна» скачивания файла">
+                    <div class="text-end img_subscription">Пример «окна» скачивания файла</div>
+                </div>
+                <div class="alert alert-info mt-3" role="alert">
+                    <p>В ходе скачивания может возникнуть ошибка, в случае если вы не заполнили обязательные поля или если сервис будет данный момент недоступен. Пред вами появится всплывающее окно с объяснением причины возникновения ошибки.</p>
+                    <div class="image_wrapper mt-3 mb-3">
+                        <img src="{% static 'conference/img/upload_thesis_instruction/8.png' %}" class="img-fluid img-thumbnail" alt="Пример ошибки при скачивании: не указаны источники">
+                        <div class="text-end img_subscription">Пример ошибки при скачивании: не указаны источники</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

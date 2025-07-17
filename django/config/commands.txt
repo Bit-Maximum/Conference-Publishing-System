@@ -1,0 +1,60 @@
+Смена часового пояса на сервере:
+tzselect
+sudo unlink /etc/localtime
+sudo ln -s /usr/share/zoneinfo/Asia/Vladivostok /etc/localtime
+
+-----
+Создание базы данных:
+sudo -u postgres psql
+
+CREATE DATABASE fordatabaseum;
+CREATE USER user WITH PASSWORD 'password';
+ALTER ROLE user SET client_encoding TO 'utf-8';
+ALTER ROLE user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE user SET timezone TO 'Asia/Vladivostok';
+
+GRANT ALL PRIVILEGES ON DATABASE database TO user;
+GRANT ALL PRIVILEGES ON SCHEMA public TO user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO user;
+GRANT CREATE ON SCHEMA public TO user;
+ALTER DATABASE database OWNER TO user;
+
+\q
+
++++
+Драйверы для PostgreSQL
+для Linux:
+pip install psycopg2-binary
+
+для Windows:
+pip install psycopg2
+
+------
+Установка Python3
+https://serverspace.ru/support/help/debian-install-python/
+
+sudo apt install python3-venv
+python3 -m venv venv
+source venv/bin/activate
+-----
+Частые библиотеки для Python3:
+sudo apt-get install -y make build-essential libssl-dev zlib1g-dev
+sudo apt-get install -y libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm
+sudo apt-get install -y libncurses5-dev  libncursesw5-dev xz-utils tk-dev
+
+-----
+Запуск проекта через gunicorn:
+pip install gunicorn
+gunicorn project.wsgi:application --bind 192.168.1.255:8000
+
+-----
+Настройка supervisor
+cd /etc/supervisor/conf.d/
+sudo update-rc.d supervisor enable
+sudo service supervisor start
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl status project
+sudo supervisorctl restart project
+--------------------

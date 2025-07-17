@@ -1,0 +1,191 @@
+{% extends "conference/profile/profile.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block header %}Личный кабинет{% endblock %}
+
+{% block verify %}
+{% if not request.user.is_verified %}
+<div class="alert alert-danger" role="alert" id="email_alert">
+    <div class="about_label" id="email_info">Ваш e-mail (<strong>{{ request.user.email }}</strong>) не подтверждён. Пожалуйста, подтвердите свой адрес электронной почты:</div>
+    <div class="btn_container" id="confirm_email_btn_container">
+        <button type="button" class="btn btn-danger margin_top" id="confirm_email_btn">Подтвердить адрес электронной почты</button>
+        <div class="spinner-border m-3" role="status" id="loading_email" hidden>
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <a href="{%url 'email_change' %}"  class="btn btn-outline align-bottom">Указать другой e-mail</a>
+    </div>
+</div>
+{% endif %}
+
+{% if not request.user.is_consent_send %}
+<div class="alert alert-danger" role="alert" id="consent_alert">
+    <div class="about_label">Для завершения регистрации необходимо заполнить согласие на обработку персональных данный.</div>
+    <div class="about_label">Пожалуйста, скачайте и заполните <a href="{% static 'conference/docs/blank.pdf' %}" download="Бланк согласия на обработку персональных данных">бланк согласия на обработку персональных данных.</a> Затем нажмите кнопку «Загрузить согласие».</div>
+
+    <div class="consent_container" id="consent_container">
+        <div class="article_text" id="consent_buttons_container">
+            <div class="error">{{ consent_form.file.errors }}</div>
+            <button type="button" class="btn btn-primary margin_top" id="add_or_edit_consent_btn">
+                Загрузить согласие
+            </button>
+        </div>
+
+        <div class="wrapper" id="add_consent_form_wrapper" hidden>
+            <h5 class="margin_bottom">Загрузить согласие на обработку персональных данных</h5>
+            <div class="about_label">Принимаются только файлы в формате .pdf</div>
+            <form action="{% url 'add_consent' user_id=request.user.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group" hidden>
+                    <input name="user" type="hidden" value="{{ request.user.id }}">
+                </div>
+                <div class="form-group margin_top margin_bottom">
+                    {{ consent_form.file|add_label_class:"form_label" }}
+                    {% render_field consent_form.file class="form_control" required=true %}
+                </div>
+                <div class="margin_top">
+                    <button type="submit" class="btn btn-primary margin_right">Отправить</button>
+                    <button type="button" class="btn btn-secondary" id="close_consent_form_btn">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if confirm_participation and not request.user.is_participation_confirmed %}
+<div class="alert alert-info" role="alert" id="participation_alert">
+    <div class="about_label">Просим всех докладчиков подтвердить свое участие в конференции.</div>
+    <div class="about_label">Пожалуйста, ознакомьтесь с <a href="{% static 'conference/docs/Программа конференции.pdf' %}" download="Научная программа конференции">научной программой конференции</a>. В случае, если Вы не сможете принять участие в конференции с заявленным докладом, просим заранее сообщить об этом письмом на e-mail: <strong>{{ email_from }}</strong>.</div>
+
+    <div class="consent_container mt-3" id="participation_container">
+        <form action="{% url 'confirm_participation' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary margin_right">Подтвердить участие</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block secondary_info %}
+
+
+    <div class="blank" id="edit_secondary_info_wrapper" hidden>
+        <h4 class="margin_bottom">Дополнительная информация: режим редактирования</h4>
+        <form id="edit_secondary_info_form" action="">
+            <div class="form-group mb-3">
+                <label for="edit_first_name_translation" class="form-label">Имя на английском языке:</label>
+                <input class="form-control" disabled type="text" name="first_name_translation" id="edit_first_name_translation" placeholder="Имя на английском языке">
+            </div>
+            <div class="form-group mb-3">
+                <label for="edit_last_name_translation" class="form-label">Фамилия на английском языке:</label>
+                <input class="form-control" disabled type="text" name="last_name_translation" id="edit_last_name_translation" placeholder="Фамилия на английском языке">
+            </div>
+            <div class="form-group mb-3">
+                <label for="edit_country" class="form-label">Страна проживания:</label>
+                <input class="form-control" disabled type="text" name="country" id="edit_country" placeholder="Страна проживания">
+            </div>
+            <div class="form-group mb-3">
+                <label for="edit_city" class="form-label">Город:</label>
+                <input class="form-control" disabled type="text" name="city" id="edit_city" placeholder="Город">
+            </div>
+            <div class="form-group mb-3">
+                <label for="edit_institution" class="form-label">Учебное заведение:</label>
+                <input class="form-control" disabled type="text" name="institution" id="edit_institution" placeholder="Учебное заведение">
+                <label for="institution" class="form-label">*сокращённое наименование. Например, «ДВФУ» - <span class="green">правильно</span>, «Дальневосточный федеральный университет» - <span class="red">неправильно.</span></label>
+            </div>
+            <div class="form-group mb-3">
+                <label for="edit_department" class="form-label">Подразделение:</label>
+                <input class="form-control" disabled type="text" name="department" id="edit_department" placeholder="Подразделение">
+                <label for="edit_department" class="form-label">*если есть, указывается сокращённое наименование. Например, «ШИГН» - <span class="green">правильно</span>, «Школа искусств и гуманитарных наук» - <span class="red">неправильно.</span></label>
+            </div>
+            <div class="form-group mb-3">
+                <label for="edit_department_group" class="form-label">Департамент:</label>
+                <input class="form-control" disabled type="text" name="department_group" id="edit_department_group" placeholder="Департамент">
+                <label for="edit_department_group" class="form-label">*если есть, указывается полное наименование. Например, «Департамент коммуникаций и медиа» - <span class="green">правильно</span>, «ДКМ» - <span class="red">неправильно.</span></label>
+            </div>
+            <div class="form-group mb-3">
+                <label for="edit_major" class="form-label">Направление / факультет:</label>
+                <input class="form-control" disabled type="text" name="major" id="edit_major" placeholder="Направление / факультет">
+            </div>
+            <div class="form-group">
+                <label for="edit_level" class="form-label">Уровень образования:</label>
+                <select class="form-control" name="level" id="edit_level">
+                    <option selected disabled value="None">Уровень образования</option>
+                    {% for item in education %}
+                    <option value="{{ item }}">{{ item }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="edit_course" class="form-label">Курс:</label>
+                <input class="form-control" disabled type="number" min="1" name="course" id="edit_course" placeholder="Курс">
+            </div>
+            <div class="form-group mb-3">
+                <label for="edit_education_group" class="form-label">Учебная группа:</label>
+                <input class="form-control" disabled type="text" name="education_group" id="edit_education_group" placeholder="Учебная группа">
+                <label for="edit_education_group" class="form-label">*например, «Б3119-08.03.01пгс»</label>
+            </div>
+
+            <div class="form-buttons">
+                <button type="button" class="btn btn-primary margin_right" id="submit_secondary_info_btn">Сохранить</button>
+                <button type="button" class="btn btn-secondary" id="cansel_secondary_info_btn">Отмена</button>
+            </div>
+        </form>
+    </div>
+    <div class="blank" id="secondary_info">
+        <h4 class="margin_bottom">Дополнительная информация</h4>
+        {% if author %}
+        <div class="about_label">Имя на английском: <div class="data" id="first_name_translation">{% if author.first_name_translation %}{{ author.first_name_translation }}{% endif %}</div></div>
+        <div class="about_label">Фамилия на английском: <div class="data"  id="last_name_translation">{% if author.last_name_translation %}{{ author.last_name_translation }}{% endif %}</div></div>
+        <hr>
+        <div class="about_label">Страна: <div class="data" id="country">{% if author.country %}{{ author.country }}{% endif %}</div></div>
+        <div class="about_label">Город: <div class="data" id="city">{% if author.city %}{{ author.city }}{% endif %}</div></div>
+        <div class="about_label">Учебное заведение: <div class="data" id="institution">{% if author.institution %}{{ author.institution }}{% endif %}</div></div>
+        <div class="about_label">Подразделение: <div class="data" id="department">{% if author.department %}{{ author.department }}{% endif %}</div></div>
+        <div class="about_label">Департамент: <div class="data" id="department_group">{% if author.department_group %}{{ author.department_group }}{% endif %}</div></div>
+        <div class="about_label">Факультет / направление: <div class="data" id="major">{% if author.major %}{{ author.major }}{% endif %}</div></div>
+        <div class="about_label">Уровень образования: <div class="data" id="level">{% if author.level %}{{ author.level }}{% endif %}</div></div>
+        <div class="about_label">Курс: <div class="data" id="course">{% if author.course %}{{ author.course }}{% endif %}</div></div>
+        <div class="about_label">Группа: <div class="data" id="education_group">{% if author.education_group %}{{ author.education_group }}{% endif %}</div></div>
+        {% else %}
+        <div class="error red" id="secondary_info_not_provided">Дополнительная информация не указана.</div>
+        {% endif %}
+        <button type="button" class="btn btn-primary margin_top" id="edit_secondary_info_btn">{% if author %}Изменить дополнительную информацию{% else %}Дополнить информацию о себе{% endif %}</button>
+    </div><!-- Secondary Info -->
+{% endblock %}
+
+{% block redirect_buttons %}
+<div class="action margin_top">
+    <a href="{%url 'third' %}"  class="btn btn-primary margin_right" id="add_article_btn">Добавить новый доклад</a>
+    <div class="data"><a href="{% url 'join' %}">Добавиться как соавтор</a> к уже зарегистрированному докладу.</div>
+</div>
+{% endblock %}
+
+{% block items_header %}Ваши работы:{% endblock %}
+
+{% block articles %}
+    {% if articles %}
+        {% for article in articles %}
+        <div class="wrapper article_wrapper">
+             <div class="article_title">Тема: <a href="{% url 'article' article_id=article.id %}">{{ article.title }}</a></div>
+             <div class="article_section">Секция: {{ article.section }}</div>
+             <div class="article_keywords">Ключевые слова: {{ article.keywords }}</div>
+<!--             <div class="article_deadline">Изменить данные можно до {{ article.deadline }}</div>-->
+         </div>
+        {% endfor %}
+    {% else %}
+        {% if request.user.is_staff %}
+            <h5>Непроверенных докладов-победителей в секции нет</h5>
+        {% else %}
+            <h5>У вас нет докладов</h5>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block comments_header %}<h4>Комментарии от редакторской коллегии:</h4>{% endblock %}
+
+{% block custom_script %}
+<script src="{% static 'conference/js/author.js' %}"></script>
+{% endblock %}

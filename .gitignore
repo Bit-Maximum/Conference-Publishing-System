@@ -1,0 +1,15 @@
+.idea
+db.sqlite3
+__pycache__/
+
+django/conference/migrations/*
+django/cms/migrations/*
+django/conference/__pycache__/
+django/cms/__pycache__/
+django/conference/management/__pycache__/
+django/__pycache__
+django/common/__pycache__/
+
+!django/conference/config/conference_config.py
+!django/cms/migrations/__init__.py
+!django/conference/migrations/__init__.py

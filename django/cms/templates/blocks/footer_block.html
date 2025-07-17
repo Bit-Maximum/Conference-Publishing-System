@@ -1,0 +1,25 @@
+{% load wagtailimages_tags wagtailcore_tags %}
+
+{% image self.qr_code height-160 as qr %}
+
+
+<div class="row justify-content-center">
+    <div class="mw-700">
+        <hr>
+        <div class="row justify-content-between">
+            <div class="col-12 col-sm-4">
+                <div class="row justify-content-center">
+                    <a href="{{ self.qr_link }}" class="fit_content">
+                        <img class="mh-160" src="{{ qr.url }}" alt="{{ qr.alt }}">
+                    </a>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6">
+                <div class="row justify-content-end text-end small">
+                    <h6 class="uppercase">КОНТАКТНАЯ ИНФОРМАЦИЯ</h6>
+                    {{ self.contact_information|richtext }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

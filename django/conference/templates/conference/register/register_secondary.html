@@ -1,0 +1,100 @@
+{% extends "conference/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="wrapper form_wrapper">
+
+            <h3>Регистрация: шаг 2 из 3</h3>
+            <h4>Ваш аккаунт создан успешно. Здесь можно указать дополнительную информацию.</h4>
+            <h5 class="mb-3">Информацию о себе можно дополнить или изменить в <a href="{% url 'profile' %}">своём личном кабинете.</a></h5>
+
+            {% if not request.user.is_verified %}
+{#                Временно отключаем подверждение почты, чтобы Яндекс не жаловался на спам#}
+{#            <div class="alert alert-warning" role="alert" id="email_alert">#}
+{#                <div class="about_label" id="email_info">На наш e-mail было направлено письмо для подтверждения аккаунта. Запросить повторную отправку подтверждения электронной почты можно в своём <a href="{% url 'profile' %}">своём личном кабинете</a>.</div>#}
+{#            </div>#}
+            {% endif %}
+
+
+            {% if message %}
+                <div class="error red">{{ message }}</div>
+            {% endif %}
+
+            <form action="{% url 'secondary' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="first_name_translation" class="form-label">Имя на английском языке:</label>
+                    <input autofocus class="form-control" type="text" name="first_name_translation" id="first_name_translation" placeholder="Имя на английском языке">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="last_name_translation" class="form-label">Фамилия на английском языке:</label>
+                    <input class="form-control" type="text" name="last_name_translation" id="last_name_translation" placeholder="Фамилия на английском языке">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="country" class="form-label">Страна проживания:</label>
+                    <input class="form-control" type="text" name="country" id="country" value="Россия" placeholder="Страна проживания">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="city" class="form-label">Город:</label>
+                    <input class="form-control" type="text" name="city" id="city" value="Владивосток" placeholder="Город">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="institution" class="form-label">Учебное заведение:</label>
+                    <input class="form-control" type="text" name="institution" id="institution" value="ДВФУ" placeholder="Учебное заведение">
+                    <label for="institution" class="form-label">*сокращённое наименование. Например, «ДВФУ» - <span class="green">правильно</span>, «Дальневосточный федеральный университет» - <span class="red">неправильно.</span></label>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="department" class="form-label">Подразделение:</label>
+                    <input class="form-control" type="text" name="department" id="department" placeholder="Подразделение">
+                    <label for="department" class="form-label">*если есть, указывается сокращённое наименование. Например, «ШИГН» - <span class="green">правильно</span>, «Школа искусств и гуманитарных наук» - <span class="red">неправильно.</span></label>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="department_group" class="form-label">Департамент:</label>
+                    <input class="form-control" type="text" name="department_group" id="department_group" placeholder="Департамент">
+                    <label for="department_group" class="form-label">*если есть, указывается полное наименование. Например, «Департамент коммуникаций и медиа» - <span class="green">правильно</span>, «ДКМ» - <span class="red">неправильно.</span></label>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="major" class="form-label">Направление / факультет:</label>
+                    <input class="form-control" type="text" name="major" id="major" placeholder="Направление / факультет" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="level" class="form-label">Уровень образования:</label>
+                    <select class="form-control" name="level" id="level">
+                        <option selected disabled value="None">Не указан</option>
+                        {% for item in education %}
+                        <option value="{{ item }}">{{ item }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="course" class="form-label">Курс:</label>
+                    <input class="form-control" type="number" min="1" name="course" id="course" placeholder="Курс" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="education_group" class="form-label">Учебная группа:</label>
+                    <input class="form-control" type="text" name="education_group" id="education_group" placeholder="Учебная группа" required>
+                    <label for="education_group" class="form-label">*например, «Б3119-08.03.01пгс»</label>
+                </div>
+                <div class="form-buttons margin_top">
+                    <input type="submit" value="Отправить" class="btn btn-primary" id="submit_btn">
+                    <div class="spinner-border m-3" role="status" id="loading" hidden>
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <a href="{%url 'third' %}"  class="btn btn-outline">Пропустить</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.getElementById('submit_btn').addEventListener('click', () => {
+        start_loading('submit_btn');
+        delay(1000).then(() => end_loading('submit_btn'));
+    });
+</script>
+{% endblock %}

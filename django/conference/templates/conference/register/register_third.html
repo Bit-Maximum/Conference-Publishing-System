@@ -1,0 +1,195 @@
+{% extends "conference/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="modal_block_container">
+    <button hidden type="button" class="btn btn-primary" id="modal_btn_first" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        Добавить меня как соавтора к уже существующей статье
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Произошла ошибка</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="error red join_error" id="join_error"></div>
+                    <div class="modal_body_title" id="modal_body_title">Тема:</div>
+                    <div class="modal_body_authors" id="modal_body_authors">
+
+                    </div>
+                    <div class="modal_body_section" id="modal_body_section">Секция:</div>
+                    <div class="modal_body_keywords" id="modal_body_keywords">Ключевые слова:</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Изменить данные</button>
+                        <button type="button" class="btn btn-primary" id="join_article_btn">Добавить меня как соавтора</button>
+                        <div class="spinner-border m-3" role="status" id="loading_modal" hidden>
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <button hidden class="btn btn-primary" id="modal_btn_second" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">Open second modal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalToggleLabel2">Запрос отправлен</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    На электронную почту автора данного доклада отправлено письмо с инструкцией по добавлению вас как соавтора.
+                </div>
+                <div class="modal-footer">
+                    <a href="{%url 'profile' %}"  class="btn btn-primary">Перейти в личный кабинет</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Registration Article form -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="wrapper form_wrapper">
+
+            <h2>Регистрация: шаг 3 из 3</h2>
+            <h3>Здесь можно указать информацию о докладе.</h3>
+            <h4 class="mb-2">Информацию можно дополнить или изменить в <a href="{% url 'profile' %}">своём личном кабинете</a>.</h4>
+            <p class="mb-3">Тезисы и текст доклада отправляются отдельно после регистрации. Подробнее о том, как загрузить документы, вы можете узнать в <a href="{% url 'upload_thesis_instruction' %}">инструкции</a>.</p>
+            <div class="action">
+                <div class="data">Я хочу <a href="{% url 'join' %}">добавиться как соавтор</a> к уже зарегистрированному докладу.</div>
+            </div>
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %}
+
+            <form action="" method="post" onsubmit="return false;">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <select autofocus class="form-control" required name="section">
+                        <option selected disabled value="None">Секция</option>
+                        {% for item in sections %}
+                        <option value="{{ item.id }}">{{ item.content }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="title" class="form-label">Тема доклада:</label>
+                    <input class="form-control" required type="text" id="title" name="title" placeholder="Тема доклада">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="title" class="form-label">Тема доклада на английском языке:</label>
+                    <input class="form-control" required type="text" id="title_translation" name="title_translation" placeholder="Тема доклада на английском языке">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="abstract" class="form-label">Аннотация:</label>
+                    <textarea class="form-control" required name="abstract" placeholder="Аннотация" id="abstract"></textarea>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="abstract_translation" class="form-label">Аннотация на английском языке:</label>
+                    <textarea class="form-control" required name="abstract_translation" placeholder="Аннотация на английском языке" id="abstract_translation"></textarea>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="keywords" class="form-label">Ключевые слова (можно указать до {{ KEYWORDS_MAX_NUM }} пунктов):</label>
+                    <textarea class="form-control" required name="keywords" id="keywords" placeholder="Ключевые слова"></textarea>
+                    <label for="keywords" class="form-label">*указываются через запятую с пробелом. Например, «журналистика, СМИ, массовые коммуникации, телевидение».</label>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="keywords_translation" class="form-label">Ключевые слова на английском языке (можно указать до {{ KEYWORDS_MAX_NUM }} пунктов):</label>
+                    <textarea class="form-control" required name="keywords_translation" id="keywords_translation" placeholder="Ключевые слова на английском языке"></textarea>
+                    <label for="keywords_translation" class="form-label">*указываются через запятую с пробелом. Например, «journalism, media, mass communications, television».</label>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="grant" class="form-label">Если доклад подготовлен при поддержке гранта, то укажите организацию:</label>
+                    <textarea class="form-control" required name="grant" id="grant" placeholder="Поле заполняется, только если доклад подготовлен при поддержке гранта"></textarea>
+                    <label for="grant" class="form-label">*если есть. Например, «Публикация подготовлена при финансовой поддержке Научного фонда ДВФУ (№ ХХХХХХХХХХХХХХ)»</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="off" name="adviser_block" id="adviser_block">
+                    <label class="form-check-label" for="adviser_block">
+                        Указать научного руководителя.
+                    </label>
+                </div>
+                <div class="adviser_wrapper hidden" id="adviser_wrapper">
+                    <h5>Данные о научном руководителе.</h5>
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="text" disabled name="adviser_first_name" placeholder="Имя">
+                    </div>
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="text" disabled name="adviser_last_name" placeholder="Фамилия">
+                    </div>
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="text" disabled name="adviser_middle_name" placeholder="Отчество">
+                        <label for="adviser_degree" class="form-label">*если есть</label>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="text" disabled name="adviser_first_name_translation" placeholder="Имя на английском языке">
+                    </div>
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="text" disabled name="adviser_last_name_translation" placeholder="Фамилия на английском языке">
+                    </div>
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="text" name="adviser_degree" disabled id="adviser_degree" placeholder="Учёная степень">
+                        <label for="adviser_degree" class="form-label">*если есть. Указывается сокращённое наименование, например, «канд. ист. наук» - <span class="green">правильно</span>, «Кандидат исторических наук» - <span class="red">неправильно.</span></label>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="text" name="academic_title" disabled id="academic_title" placeholder="Ученое звание">
+                        <label for="academic_title" class="form-label">*если есть. Например, «доцент».</label>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="text" name="job_title" disabled id="job_title" placeholder="Должность">
+                        <label for="job_title" class="form-label">*если есть</label>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="text" name="adviser_job" disabled id="adviser_job" placeholder="Место работы">
+                        <label for="adviser_job" class="form-label">*если есть. Указывается сокращённо, например «ДКМ ШИГН ДВФУ»</label>
+                    </div>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="co_authorship" value="0" id="co_authorship">
+                    <label class="form-check-label" for="co_authorship">
+                        Указать соавторов.
+                    </label>
+                </div>
+                <div class="authorship_container hidden" id="co_authorship_container">
+                    <h5>Данные о соавторах.</h5>
+                    <h6>Чтобы добавить соавтора, он должен быть зарегистрирован на сайте конференции и должен подтвердить свою электронную почту. Зарегистрироваться можно <a href="{% url 'register' %}">на этой странице.</a></h6>
+                    <div class="action">
+                        <button type="button" class="btn btn-primary" id="add_co_author_btn">Добавить нового соавтора</button>
+                    </div>
+                    <div class="items_container" id="authorship_items"></div>
+                </div>
+
+                <div class="error_field" id="submit_error">
+                    <div class="error red" id="errors_wrapper"></div>
+                </div>
+                <br>
+                <div class="form-buttons margin_top">
+                    <input type="button" value="Отправить" class="btn btn-primary" id="submit_btn">
+                    <div class="spinner-border m-3" role="status" id="loading" hidden>
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <a href="{%url 'profile' %}"  class="btn btn-outline">Пропустить</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    var CSRFTOKEN = '{{ csrf_token }}';
+</script>
+<script src="{% static 'conference/js/register.js' %}"></script>
+<script src="{% static 'conference/js/register_third.js' %}"></script>
+{% endblock %}

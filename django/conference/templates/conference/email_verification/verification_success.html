@@ -1,0 +1,17 @@
+{% extends "conference/layout.html" %}
+{% load widget_tweaks %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="wrapper form_wrapper">
+            {% if success %}
+            <p>{{ user.last_name }} {{ user.first_name }}{%  if user.middle_name %} {{ user.middle_name}}{% endif %}, ваша учётная запись успешно подтверждена!</p>
+            <p>Вы можете добавить / изменить введённые данные в вашем <a href="{% url 'profile' %}">личном кабинете</a>.</p>
+            {% else %}
+                <p>Ошибка, срок действия ссылки истек. Пожалуйста, <a href="{% url 'profile' %}">запросите повторное подтверждение электронной почты</a>.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

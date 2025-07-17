@@ -1,0 +1,17 @@
+{% extends "conference/layout.html" %}
+
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="wrapper form_wrapper">
+            {% if success %}
+            <p>Вы были успешно добавлены в качестве соавтора к докладу «{{ title }}».</p>
+            <p>Вы можете посмотреть / изменить список авторов на <a href="{% url 'article' article_id=article_id %}">странице доклада</a>.</p>
+            {% else %}
+                <p>Ошибка, ссылка не действительна. Вы можете отправить просьбу включить вас в список авторов доклада <a href="{% url 'join' %}">на этой странице</a>.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

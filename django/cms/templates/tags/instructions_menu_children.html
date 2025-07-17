@@ -1,0 +1,15 @@
+{% load base_tags wagtailcore_tags %}
+
+{% for child in menuitems %}
+    {% if not child.staff_only %}
+    <li><a class="dropdown-item" href="{% pageurl child %}">{{ child.title }}</a></li>
+    {% endif %}
+{% endfor %}
+{% if has_staff_only %}
+    <li><hr class="dropdown-divider"></li>
+    {% for child in menuitems %}
+        {% if child.staff_only %}
+        <li><a class="dropdown-item" href="{% pageurl child %}">{{ child.title }}</a></li>
+        {% endif %}
+    {% endfor %}
+{% endif %}

@@ -1,0 +1,13 @@
+{% load wagtailcore_tags %}
+
+<div class="row justify-content-center text-center">
+    <p class="large uppercase mb-1">{{ self.sponsor }}</p>
+    <p>{{ self.title }}</p>
+    <h4 class="home_header">{{ self.place }}</h4>
+</div>
+<br>
+<br>
+<div class="row justify-content-center text-center">
+    <div class="large home_header">{{  self.introduction }}</div>
+    <h5 class="home_header">{{ self.conference_name }}</h5>
+</div>
